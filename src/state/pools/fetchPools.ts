@@ -447,22 +447,24 @@ const getTokenDetails = async (ethers: providers.Provider, tokensList: string[],
     if (tokensList.length === 0) return {}
     const tokens = tokensList.filter((e) => e != WRAPPED_NATIVE)
     const lpTokens = await findLPTokens(ethers, tokens)
-    const lpDetails = Object.values(await getLPInfo(ethers, Object.values(lpTokens), userAccount))
+    const lpInfo = await getLPInfo(ethers, Object.values(lpTokens), userAccount)
     // TODO: if LP is BUSD-ETH pair, don't return the multiplied price
     const tokenPrice: { [key: string]: TokenDetails } = {}
-    lpDetails
-        .forEach((e, i) => {
-            const baseToken = e.token0Address === tokens[i] ?
+    tokens.forEach((t) => {
+        const e = lpInfo[lpTokens[t]]
+        if (e) {
+            const baseToken = e.token0Address === t ?
                 e.token0 : e.token1
-            const usdPrice = e.token0Address === tokens[i] ?
+            const usdPrice = e.token0Address === t ?
                 e.token0.price.times(ethPrice) :
                 e.token1.price.times(ethPrice)
 
-            tokenPrice[tokens[i]] = {
+            tokenPrice[t] = {
                 ...baseToken,
                 price: usdPrice,
             }
-        })
+        }
+    })
     // TODO: Improve adding the native price manually
     if (Object.values(tokenPrice).length !== Object.values(tokensList).length)
         tokenPrice[WRAPPED_NATIVE] = {
