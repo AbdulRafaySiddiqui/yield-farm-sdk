@@ -178,11 +178,13 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
     for (let i = 0; i < project.pools.length; i++) {
         const pool = project.pools[i]
         const stakeTokenDetails = tokenPrices[pool.stakedToken]
+        project.pools[i].stakedTokenDetails = stakeTokenDetails
         project.pools[i].stats = {
             price: stakeTokenDetails.price,
             liquidity: stakeTokenDetails.price.times(toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.decimals)),
-            apy: pool.rewardInfo.map(e => {
+            apy: pool.rewardInfo.map((e, j) => {
                 const rewardTokenDetails = tokenPrices[e.token]
+                project.pools[i].rewardInfo[j].details = rewardTokenDetails
                 return getApy(
                     stakeTokenDetails.price.toFixed(),
                     rewardTokenDetails.price.toFixed(),
@@ -192,8 +194,7 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
             })
         }
     }
-
-    console.log(project)
+    console.log('farms-sdk', project)
 
     return project
 }

@@ -45,10 +45,12 @@ export interface Pool {
     stakeTokenApproved?: boolean
     poolCardsApproved?: boolean
     stats?: PoolStats
+    stakedTokenDetails?: TokenDetails
 }
 
 export interface RewardInfo {
     token: string
+    details?: TokenDetails
     paused: boolean
     mintable: boolean
     rewardPerBlock: BigNumber
