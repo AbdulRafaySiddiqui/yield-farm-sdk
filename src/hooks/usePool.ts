@@ -51,7 +51,7 @@ export const useSetPool = () => {
     return { set, txState }
 }
 
-export const usePool = (projectId: number, poolId: number) => {
+export const useSinglePool = (projectId: number, poolId: number) => {
     const [loading, setLoading] = useState(false)
     const [pool, setPool] = useState<Pool>()
 

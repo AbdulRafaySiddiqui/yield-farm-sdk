@@ -3,8 +3,7 @@ import { PROJECT_ID } from "../config";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux"
 import { loadPools } from "./pools/poolState"
-import { PoolState, State, Pool } from "../config/types";
-
+import { State, Pool } from "../config/types";
 
 export const usePools = () => {
     const { ethers, account } = useEthers();
@@ -17,6 +16,13 @@ export const usePools = () => {
 
     return {
         pools: useSelector<State, Pool[]>(state => state.pools.data),
+        loading: useSelector<State, boolean>(state => state.pools.loading)
+    }
+}
+
+export const usePool = (poolId: number) => {
+    return {
+        pools: useSelector<State, Pool | undefined>(state => state.pools.data.find(e => e.poolId === poolId)),
         loading: useSelector<State, boolean>(state => state.pools.loading)
     }
 }
