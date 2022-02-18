@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { toUpperUnit, useERC20Approval, useERC1155Approval, useEthers, UtilsProvider } from '@react-dapp/utils'
-import { useAddPool, useDeposit, useHarvest, useSetPool, useWithdraw } from './hooks/usePool';
+import { useAddPool, useDeposit, useHarvest, useSetPool, useWithdraw } from '../src/hooks/usePool';
 import BigNumber from 'bignumber.js';
-import { Pool } from './config/types';
-import { usePools } from './state/hooks';
+import { Pool } from '../src/config/types';
+import { usePools } from '../src/state/hooks';
 import { Provider } from "react-redux";
-import store from './state/store'
-import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from './config';
+import store from '../src/state/store'
+import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from '../src/config';
 
 console.warn = () => { }
 require('dotenv').config()
