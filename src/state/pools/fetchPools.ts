@@ -1,4 +1,4 @@
-import { ERC1155_ABI, ERC20_ABI, ERC721_ABI, getApy, LP_ABI, toBigNumber, Token, TokenStandard, toLowerUnit, toUpperUnit } from "@react-dapp/utils";
+import { ERC1155_ABI, ERC20_ABI, ERC721_ABI, getApy, LP_ABI, toBigNumber, TokenStandard, toLowerUnit } from "@react-dapp/utils";
 import { CARD_HANDLER_ADDRESS, EXCHANGE_FACTORY_ADDRESS, FARM_ADDRESS, POOL_CARDS_ADDRESS, PROJECT_HANDLER_ADDRESS, WRAPPED_NATIVE } from "../../config";
 import PROJECT_HANDLER_ABI from '../../assets/abi/project_handler.json';
 import CARD_HANDLER_ABI from '../../assets/abi/card_handler.json';
@@ -12,6 +12,7 @@ import {
 } from 'ethereum-multicall';
 import BigNumber from "bignumber.js";
 import { Contract, providers } from "ethers";
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const fetchPools = async (ethersProvider: providers.Provider, projectId: number, account: string) => {
     if (!ethersProvider || !account) return;
@@ -174,7 +175,7 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
         const element = project.pools[i];
         tokens = [...tokens, element.stakedToken, ...element.rewardInfo.map(e => e.token)]
     }
-    const tokenPrices = await getTokenAndLPPrices(ethersProvider, tokens, EthPriceInBUSD)
+    const tokenPrices = await getTokenAndLPPrices(ethersProvider, tokens, EthPriceInBUSD, account)
     for (let i = 0; i < project.pools.length; i++) {
         const pool = project.pools[i]
         const stakeTokenDetails = tokenPrices[pool.stakedToken]
@@ -225,7 +226,7 @@ const findLPTokens = async (ethers: providers.Provider, tokens: string[]) => {
     return lpTokens
 }
 
-const getLPInfo = async (ethers: providers.Provider, lpTokens: string[]) => {
+const getLPInfo = async (ethers: providers.Provider, lpTokens: string[], userAccount: string = ZERO_ADDRESS) => {
     if (lpTokens.length === 0) return {}
 
     const multicall = new Multicall({ ethersProvider: ethers, tryAggregate: false });
@@ -266,6 +267,11 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[]) => {
                     methodName: "totalSupply",
                     methodParameters: [],
                 },
+                {
+                    reference: "balanceOf",
+                    methodName: "balanceOf",
+                    methodParameters: [userAccount],
+                },
             ]
         }
     })
@@ -281,6 +287,7 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[]) => {
             symbol: element[3].returnValues[0],
             decimals: Number(element[4].returnValues[0]),
             totalSupply: toBigNumber(element[5].returnValues[0]),
+            balance: toBigNumber(element[6].returnValues[0]),
         }
         lpTokenData[lpData[i].originalContractCallContext.reference] = lp
     }
@@ -319,6 +326,11 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[]) => {
                     methodName: "balanceOf",
                     methodParameters: [e.address],
                 },
+                {
+                    reference: "balanceOf",
+                    methodName: "balanceOf",
+                    methodParameters: [userAccount],
+                },
             ]
         }
     })
@@ -353,6 +365,11 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[]) => {
                     methodName: "balanceOf",
                     methodParameters: [e.address],
                 },
+                {
+                    reference: "balanceOf",
+                    methodName: "balanceOf",
+                    methodParameters: [userAccount],
+                },
             ]
         }
     })
@@ -378,6 +395,7 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[]) => {
                 decimals: token0.callsReturnContext[2].returnValues[0],
                 totalSupply: toBigNumber(token0.callsReturnContext[3].returnValues[0]),
                 lpBalance: toBigNumber(token0.callsReturnContext[4].returnValues[0]),
+                balance: toBigNumber(token0.callsReturnContext[5].returnValues[0]),
                 // token0 price in terms of token1
                 price: token1UnitBalance.div(token0UnitBalance),
             },
@@ -388,6 +406,7 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[]) => {
                 decimals: token1.callsReturnContext[2].returnValues[0],
                 totalSupply: toBigNumber(token1.callsReturnContext[3].returnValues[0]),
                 lpBalance: toBigNumber(token1.callsReturnContext[4].returnValues[0]),
+                balance: toBigNumber(token1.callsReturnContext[5].returnValues[0]),
                 // token1 price in terms on token0
                 price: token0UnitBalance.div(token1UnitBalance),
             }
@@ -396,7 +415,8 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[]) => {
     return lpDetails
 }
 
-const getTokenPrice = async (ethers: providers.Provider, tokensList: string[], ethPrice: BigNumber) => {
+// return the price balane and other props of token
+const getTokenDetails = async (ethers: providers.Provider, tokensList: string[], ethPrice: BigNumber) => {
     if (tokensList.length === 0) return {}
     const tokens = tokensList.filter((e) => e != WRAPPED_NATIVE)
     const lpTokens = await findLPTokens(ethers, tokens)
@@ -427,16 +447,17 @@ const getTokenPrice = async (ethers: providers.Provider, tokensList: string[], e
     return tokenPrice
 }
 
-const getLPPrice = async (ethers: providers.Provider, lpTokens: string[], ethPrice: BigNumber) => {
+// return the price balane and other props of lp token
+const getLPDetails = async (ethers: providers.Provider, lpTokens: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
     if (lpTokens.length === 0) return {}
 
-    const lpDetails = await getLPInfo(ethers, lpTokens)
+    const lpDetails = await getLPInfo(ethers, lpTokens, userAccount)
     const allPairTokens: string[] = [];
     Object.values(lpDetails).forEach(e => {
         allPairTokens.push(e.token0Address)
         allPairTokens.push(e.token1Address)
     });
-    const allPairTokensPrice = await getTokenPrice(ethers, allPairTokens, ethPrice);
+    const allPairTokensPrice = await getTokenDetails(ethers, allPairTokens, ethPrice);
     const lpTvlDetails: {
         [key: string]: TokenDetails
     } = {}
@@ -452,17 +473,17 @@ const getLPPrice = async (ethers: providers.Provider, lpTokens: string[], ethPri
     return lpTvlDetails
 }
 
-const getTokenAndLPPrices = async (ethers: providers.Provider, tokensAndLps: string[], ethPrice: BigNumber) => {
+const getTokenAndLPPrices = async (ethers: providers.Provider, tokensAndLps: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
     // divide the lps and tokens
     const tokenLPs = await findLPTokens(ethers, tokensAndLps)
     const lps: string[] = []
     const tokens: string[] = []
     tokensAndLps.forEach((e) => {
-        if (tokenLPs[e] === '0x0000000000000000000000000000000000000000') lps.push(e)
+        if (tokenLPs[e] === ZERO_ADDRESS) lps.push(e)
         else tokens.push(e)
     })
-    const tokensPrices = await getTokenPrice(ethers, tokens, ethPrice)
-    const lpPrices = await getLPPrice(ethers, lps, ethPrice)
+    const tokensPrices = await getTokenDetails(ethers, tokens, ethPrice)
+    const lpPrices = await getLPDetails(ethers, lps, ethPrice, userAccount)
     const prices: { [key: string]: TokenDetails } = {}
     // add token prices
     for (const key in tokensPrices) {

@@ -111,12 +111,14 @@ export interface TokenDetails extends Token {
 
 export interface PairToken extends TokenDetails {
     lpBalance: BigNumber
+    balance: BigNumber
 }
 
 export interface LPToken extends Token {
     token0Address: string
     token1Address: string
     totalSupply: BigNumber
+    balance: BigNumber
 }
 
 export interface LPDetails extends LPToken {
