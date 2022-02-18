@@ -46,6 +46,7 @@ export interface Pool {
     poolCardsApproved?: boolean
     stats?: PoolStats
     stakedTokenDetails?: TokenDetails
+    isLP?: boolean
 }
 
 export interface RewardInfo {

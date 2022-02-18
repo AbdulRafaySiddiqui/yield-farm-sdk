@@ -179,20 +179,21 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
     for (let i = 0; i < project.pools.length; i++) {
         const pool = project.pools[i]
         const stakeTokenDetails = tokenPrices[pool.stakedToken]
-        project.pools[i].stakedTokenDetails = stakeTokenDetails
+        project.pools[i].stakedTokenDetails = stakeTokenDetails.details
+        project.pools[i].isLP = stakeTokenDetails.isLP
         if (stakeTokenDetails) {
             project.pools[i].stats = {
-                price: stakeTokenDetails?.price,
-                liquidity: stakeTokenDetails?.price.times(toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.decimals)),
+                price: stakeTokenDetails?.details.price,
+                liquidity: stakeTokenDetails?.details.price.times(toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.details.decimals)),
                 apy: pool.rewardInfo.map((e, j) => {
                     const rewardTokenDetails = tokenPrices[e.token]
-                    project.pools[i].rewardInfo[j].details = rewardTokenDetails
+                    project.pools[i].rewardInfo[j].details = rewardTokenDetails.details
                     if (rewardTokenDetails)
                         return getApy(
-                            stakeTokenDetails.price.toFixed(),
-                            rewardTokenDetails?.price.toFixed(),
-                            toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.decimals).toFixed(),
-                            toLowerUnit(e.rewardPerBlock.toFixed(), rewardTokenDetails.decimals).toNumber(),
+                            stakeTokenDetails.details.price.toFixed(),
+                            rewardTokenDetails?.details.price.toFixed(),
+                            toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails?.details.decimals).toFixed(),
+                            toLowerUnit(e.rewardPerBlock.toFixed(), rewardTokenDetails?.details.decimals).toNumber(),
                         )
                 })
             }
@@ -515,17 +516,28 @@ const getTokenAndLPPrices = async (ethers: providers.Provider, tokensAndLps: str
     })
     const tokensPrices = await getTokenDetails(ethers, tokens, ethPrice, userAccount)
     const lpPrices = await getLPDetails(ethers, lps, ethPrice, userAccount)
-    const prices: { [key: string]: TokenDetails } = {}
+    const prices: {
+        [key: string]: {
+            isLP: boolean
+            details: TokenDetails
+        }
+    } = {}
     // add token prices
     for (const key in tokensPrices) {
         if (Object.prototype.hasOwnProperty.call(tokensPrices, key)) {
-            prices[key] = tokensPrices[key]
+            prices[key] = {
+                isLP: false,
+                details: tokensPrices[key]
+            }
         }
     }
     // add lp prices
     for (const key in lpPrices) {
         if (Object.prototype.hasOwnProperty.call(lpPrices, key)) {
-            prices[key] = lpPrices[key]
+            prices[key] = {
+                isLP: true,
+                details: lpPrices[key]
+            }
         }
     }
     return prices
