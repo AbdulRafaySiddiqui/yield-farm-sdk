@@ -416,11 +416,11 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[], userAcc
 }
 
 // return the price balane and other props of token
-const getTokenDetails = async (ethers: providers.Provider, tokensList: string[], ethPrice: BigNumber) => {
+const getTokenDetails = async (ethers: providers.Provider, tokensList: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
     if (tokensList.length === 0) return {}
     const tokens = tokensList.filter((e) => e != WRAPPED_NATIVE)
     const lpTokens = await findLPTokens(ethers, tokens)
-    const lpDetails = Object.values(await getLPInfo(ethers, Object.values(lpTokens)))
+    const lpDetails = Object.values(await getLPInfo(ethers, Object.values(lpTokens), userAccount))
     // TODO: if LP is BUSD-ETH pair, don't return the multiplied price
     const tokenPrice: { [key: string]: TokenDetails } = {}
     lpDetails
@@ -457,7 +457,7 @@ const getLPDetails = async (ethers: providers.Provider, lpTokens: string[], ethP
         allPairTokens.push(e.token0Address)
         allPairTokens.push(e.token1Address)
     });
-    const allPairTokensPrice = await getTokenDetails(ethers, allPairTokens, ethPrice);
+    const allPairTokensPrice = await getTokenDetails(ethers, allPairTokens, ethPrice, userAccount);
     const lpTvlDetails: {
         [key: string]: TokenDetails
     } = {}
@@ -482,7 +482,7 @@ const getTokenAndLPPrices = async (ethers: providers.Provider, tokensAndLps: str
         if (tokenLPs[e] === ZERO_ADDRESS) lps.push(e)
         else tokens.push(e)
     })
-    const tokensPrices = await getTokenDetails(ethers, tokens, ethPrice)
+    const tokensPrices = await getTokenDetails(ethers, tokens, ethPrice, userAccount)
     const lpPrices = await getLPDetails(ethers, lps, ethPrice, userAccount)
     const prices: { [key: string]: TokenDetails } = {}
     // add token prices
