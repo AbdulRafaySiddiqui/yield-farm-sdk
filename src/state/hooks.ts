@@ -8,13 +8,12 @@ import { State, Pool } from "../config/types";
 export const usePools = () => {
     const { ethers, account } = useEthers();
     const { reload, reloadable } = useReload()
-    const { slowRefresh } = useRefresh()
     const dispatch = useDispatch();
 
     useEffect(() => {
         if (ethers && account)
             dispatch(loadPools({ ethersProvider: ethers, projectId: PROJECT_ID, account: account }))
-    }, [account, ethers, reloadable, slowRefresh])
+    }, [account, ethers, reloadable])
 
     return {
         pools: useSelector<State, Pool[]>(state => state.pools.data),
