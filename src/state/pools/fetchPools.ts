@@ -187,7 +187,7 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
                 liquidity: stakeTokenDetails?.details.price.times(toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.details.decimals)),
                 apy: pool.rewardInfo.map((e, j) => {
                     const rewardTokenDetails = tokenPrices[e.token]
-                    project.pools[i].rewardInfo[j].details = rewardTokenDetails.details
+                    project.pools[i].rewardInfo[j].details = rewardTokenDetails?.details
                     if (rewardTokenDetails)
                         return getApy(
                             stakeTokenDetails.details.price.toFixed(),
@@ -199,7 +199,6 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
             }
         }
     }
-
     return project
 }
 
