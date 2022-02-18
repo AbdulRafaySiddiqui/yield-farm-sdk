@@ -1,5 +1,5 @@
 import { ERC1155_ABI, ERC20_ABI, ERC721_ABI, getApy, LP_ABI, toBigNumber, TokenStandard, toLowerUnit } from "@react-dapp/utils";
-import { CARD_HANDLER_ADDRESS, EXCHANGE_FACTORY_ADDRESS, FARM_ADDRESS, LP_NAME, POOL_CARDS_ADDRESS, PROJECT_HANDLER_ADDRESS, WRAPPED_NATIVE } from "../../config";
+import { CARD_HANDLER_ADDRESS, ETH_USD_PAIR, EXCHANGE_FACTORY_ADDRESS, FARM_ADDRESS, LP_NAME, POOL_CARDS_ADDRESS, PROJECT_HANDLER_ADDRESS, WRAPPED_NATIVE } from "../../config";
 import PROJECT_HANDLER_ABI from '../../assets/abi/project_handler.json';
 import CARD_HANDLER_ABI from '../../assets/abi/card_handler.json';
 import FACTORY_ABI from '../../assets/abi/pancakeswap_factory_abi.json';
@@ -17,7 +17,7 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const fetchPools = async (ethersProvider: providers.Provider, projectId: number, account: string) => {
     if (!ethersProvider || !account) return;
 
-    const EthPriceInBUSD = Object.values(await getLPInfo(ethersProvider, ['0x27AbCd0CbCA4fA9AF333d5d13f4fb5132c5ae544']))[0].token0.price
+    const EthPriceInBUSD = Object.values(await getLPInfo(ethersProvider, [ETH_USD_PAIR]))[0].token0.price
 
     const projectHandler = new Contract(PROJECT_HANDLER_ADDRESS, PROJECT_HANDLER_ABI, ethersProvider)
     const _project = await projectHandler.getProjectInfo('0');
@@ -457,6 +457,7 @@ const getTokenDetails = async (ethers: providers.Provider, tokensList: string[],
             const usdPrice = e.token0Address === tokens[i] ?
                 e.token0.price.times(ethPrice) :
                 e.token1.price.times(ethPrice)
+
             tokenPrice[tokens[i]] = {
                 ...baseToken,
                 price: usdPrice,
