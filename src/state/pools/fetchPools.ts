@@ -198,7 +198,6 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
             }
         }
     }
-    console.log('farms-sdk', project)
 
     return project
 }
