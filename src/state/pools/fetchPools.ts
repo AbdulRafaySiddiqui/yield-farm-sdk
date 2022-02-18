@@ -1,5 +1,5 @@
 import { ERC1155_ABI, ERC20_ABI, ERC721_ABI, getApy, LP_ABI, toBigNumber, TokenStandard, toLowerUnit } from "@react-dapp/utils";
-import { CARD_HANDLER_ADDRESS, EXCHANGE_FACTORY_ADDRESS, FARM_ADDRESS, POOL_CARDS_ADDRESS, PROJECT_HANDLER_ADDRESS, WRAPPED_NATIVE } from "../../config";
+import { CARD_HANDLER_ADDRESS, EXCHANGE_FACTORY_ADDRESS, FARM_ADDRESS, LP_NAME, POOL_CARDS_ADDRESS, PROJECT_HANDLER_ADDRESS, WRAPPED_NATIVE } from "../../config";
 import PROJECT_HANDLER_ABI from '../../assets/abi/project_handler.json';
 import CARD_HANDLER_ABI from '../../assets/abi/card_handler.json';
 import FACTORY_ABI from '../../assets/abi/pancakeswap_factory_abi.json';
@@ -180,24 +180,51 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
         const pool = project.pools[i]
         const stakeTokenDetails = tokenPrices[pool.stakedToken]
         project.pools[i].stakedTokenDetails = stakeTokenDetails
-        project.pools[i].stats = {
-            price: stakeTokenDetails.price,
-            liquidity: stakeTokenDetails.price.times(toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.decimals)),
-            apy: pool.rewardInfo.map((e, j) => {
-                const rewardTokenDetails = tokenPrices[e.token]
-                project.pools[i].rewardInfo[j].details = rewardTokenDetails
-                return getApy(
-                    stakeTokenDetails.price.toFixed(),
-                    rewardTokenDetails.price.toFixed(),
-                    toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.decimals).toFixed(),
-                    toLowerUnit(e.rewardPerBlock.toFixed(), rewardTokenDetails.decimals).toNumber(),
-                )
-            })
+        if (stakeTokenDetails) {
+            project.pools[i].stats = {
+                price: stakeTokenDetails?.price,
+                liquidity: stakeTokenDetails?.price.times(toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.decimals)),
+                apy: pool.rewardInfo.map((e, j) => {
+                    const rewardTokenDetails = tokenPrices[e.token]
+                    project.pools[i].rewardInfo[j].details = rewardTokenDetails
+                    if (rewardTokenDetails)
+                        return getApy(
+                            stakeTokenDetails.price.toFixed(),
+                            rewardTokenDetails?.price.toFixed(),
+                            toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.decimals).toFixed(),
+                            toLowerUnit(e.rewardPerBlock.toFixed(), rewardTokenDetails.decimals).toNumber(),
+                        )
+                })
+            }
         }
     }
     console.log('farms-sdk', project)
 
     return project
+}
+
+const areLPTokens = async (ethers: providers.Provider, tokens: string[]) => {
+    if (tokens.length === 0) return {}
+
+    const multicall = new Multicall({ ethersProvider: ethers, tryAggregate: false });
+    const call = tokens.map(e => {
+        return {
+            reference: e,
+            contractAddress: e,
+            abi: ERC20_ABI,
+            calls: [{
+                reference: e,
+                methodName: "name",
+                methodParameters: [],
+            }]
+        }
+    })
+    const data = (await multicall.call(call)).results
+    const lpTokens: {
+        [key: string]: boolean
+    } = {}
+    tokens.forEach(e => lpTokens[e] = data[e].callsReturnContext[0].returnValues[0] === LP_NAME)
+    return lpTokens
 }
 
 const findLPTokens = async (ethers: providers.Provider, tokens: string[]) => {
@@ -476,11 +503,13 @@ const getLPDetails = async (ethers: providers.Provider, lpTokens: string[], ethP
 const getTokenAndLPPrices = async (ethers: providers.Provider, tokensAndLps: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
     // divide the lps and tokens
     const tokenLPs = await findLPTokens(ethers, tokensAndLps)
+    const areLps = await areLPTokens(ethers, tokensAndLps)
     const lps: string[] = []
     const tokens: string[] = []
     tokensAndLps.forEach((e) => {
-        if (tokenLPs[e] === ZERO_ADDRESS) lps.push(e)
-        else tokens.push(e)
+        if (areLps[e]) lps.push(e)
+        else if (tokenLPs[e] !== ZERO_ADDRESS) tokens.push(e)
+        // if token don't have lp pair, do nothing
     })
     const tokensPrices = await getTokenDetails(ethers, tokens, ethPrice, userAccount)
     const lpPrices = await getLPDetails(ethers, lps, ethPrice, userAccount)

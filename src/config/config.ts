@@ -10,6 +10,7 @@ BigNumber.config({
 export const EXCHANGE_ROUTERS_ADDRESS = process.env.REACT_APP_EXCHANGE_ROUTERS_ADDRESS as string
 export const EXCHANGE_FACTORY_ADDRESS = process.env.REACT_APP_EXCHANGE_FACTORY_ADDRESS as string
 export const WRAPPED_NATIVE = process.env.REACT_APP_WRAPPED_NATIVE as string
+export const LP_NAME = process.env.REACT_APP_LP_NAME as string
 
 // export const EXCHANGE_ROUTERS_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 // export const EXCHANGE_FACTORY_ADDRESS = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'

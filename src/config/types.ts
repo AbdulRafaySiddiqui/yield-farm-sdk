@@ -20,7 +20,7 @@ export interface Project {
 export interface PoolStats {
     price: BigNumber
     liquidity: BigNumber
-    apy: (number | null)[]
+    apy: (number | undefined | null)[]
 }
 
 export interface Pool {
