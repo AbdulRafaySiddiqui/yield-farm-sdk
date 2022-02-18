@@ -413,8 +413,13 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[], userAcc
 
         const token0UnitBalance = toLowerUnit(token0Balance.toFixed(0), token0Decimals)
         const token1UnitBalance = toLowerUnit(token1Balance.toFixed(0), token1Decimals)
+
+        const token0Symbol = token0.callsReturnContext[1].returnValues[0];
+        const token1Symbol = token1.callsReturnContext[1].returnValues[0];
         lpDetails[lpTokenData[key].address] = {
             ...lpTokenData[key],
+            // replace the LP symbol with contatenated token 0 & 1 symbol
+            symbol: `${token0Symbol} - $${token1Symbol}`,
             token0: {
                 address: token0.originalContractCallContext.contractAddress,
                 name: token0.callsReturnContext[0].returnValues[0],
