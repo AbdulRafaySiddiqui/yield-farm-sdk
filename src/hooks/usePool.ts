@@ -213,7 +213,8 @@ export const usePool = (poolId: number, handleError: (message: string) => void =
         harvestInfo: {
             harvest: handleHarvest,
             pending: harvest.txPending
-        }
+        },
+        details: pool
     }
 }
 
