@@ -1,10 +1,10 @@
-import { awaitTransaction, STATE, toBigNumber, toLowerUnit, useERC1155Approval, useERC20Approval, useInputValue, ZERO_ADDRESS } from "@react-dapp/utils"
-import { Pool, DepositInfo, WithdrawInfo, HarvestInfo, NftDeposit } from "../config/types"
+import { awaitTransaction, STATE, toBigNumber, toLowerUnit, useERC1155Approval, useERC20Approval, useInputValue, bigNumberObjtoString, ZERO_ADDRESS } from "@react-dapp/utils"
+import { Pool, DepositInfo, WithdrawInfo, HarvestInfo, NftDeposit, State } from "../config/types"
 import { useEffect, useState } from "react"
 import { useCardHandlerContract, useNftVillageChiefContract, useProjectHandlerContract } from "./useContracts"
-import { usePools } from "../state/hooks"
+import { useLoadPools, usePools } from "../state/hooks"
 import { FARM_ADDRESS, POOL_CARDS_ADDRESS, PROJECT_ID } from "../config"
-import BigNumber from "bignumber.js"
+import { useSelector } from "react-redux"
 
 export const useAddPool = () => {
     const projectHandler = useProjectHandlerContract()
@@ -117,8 +117,8 @@ export const useSinglePool = (projectId: number, poolId: number) => {
 }
 
 export const usePool = (poolId: number, handleError: (message: string) => void = (message) => console.log(message)) => {
-    const { pools, loading, reload } = usePools()
-    const pool = pools.find(e => e.poolId === poolId)
+    const pool = useSelector<State, Pool | undefined>(state => state.pools.data.find(e => e.poolId === poolId))
+    const { load, loading } = useLoadPools()
 
     const deposit = useDeposit()
     const withdraw = useWithdraw()
@@ -145,7 +145,7 @@ export const usePool = (poolId: number, handleError: (message: string) => void =
         if (!response.status) handleError(response.error)
         else {
             depositAmount.setValue('0')
-            reload()
+            load()
         }
     }
 
@@ -161,7 +161,7 @@ export const usePool = (poolId: number, handleError: (message: string) => void =
         if (!response.status) handleError(response.error)
         else {
             withdrawAmount.setValue('0')
-            reload()
+            load()
         }
     }
 
@@ -171,7 +171,7 @@ export const usePool = (poolId: number, handleError: (message: string) => void =
         })
         if (!response.status) handleError(response.error)
         else {
-            reload()
+            load()
         }
     }
 
@@ -215,31 +215,6 @@ export const usePool = (poolId: number, handleError: (message: string) => void =
             pending: harvest.txPending
         }
     }
-}
-
-export const bigNumberObjtoString = (obj: any) => {
-    let transformedObj: any;
-
-    if (Array.isArray(obj)) {
-        transformedObj = obj.map(e => {
-            return bigNumberObjtoString(e)
-        });
-        return transformedObj
-    } else if (obj && typeof obj === 'object') {
-        transformedObj = {}
-        for (const key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                const element = obj[key];
-                if (BigNumber.isBigNumber(element))
-                    transformedObj[key] = element.toFixed(0)
-                else if (typeof element === 'object')
-                    transformedObj[key] = bigNumberObjtoString(element)
-                else
-                    transformedObj[key] = element
-            }
-        }
-    }
-    return transformedObj ?? obj;
 }
 
 export const useDeposit = () => {

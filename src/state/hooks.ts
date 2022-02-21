@@ -5,6 +5,22 @@ import { useDispatch, useSelector } from "react-redux"
 import { loadPools } from "./pools/poolState"
 import { State, Pool } from "../config/types";
 
+export const useLoadPools = () => {
+    const { ethers, account } = useEthers();
+    const dispatch = useDispatch();
+
+    const load = async () => {
+        if (account)
+            dispatch(loadPools({ ethersProvider: ethers, projectId: PROJECT_ID, account: account }))
+        else console.log('Cannot load pools, wallet account not connected yet!')
+    }
+
+    return {
+        loading: useSelector<State, boolean>(state => state.pools.loading),
+        load
+    }
+}
+
 export const usePools = () => {
     const { ethers, account } = useEthers();
     const { reload, reloadable } = useReload()
@@ -19,12 +35,5 @@ export const usePools = () => {
         pools: useSelector<State, Pool[]>(state => state.pools.data),
         loading: useSelector<State, boolean>(state => state.pools.loading),
         reload
-    }
-}
-
-export const usePool = (poolId: number) => {
-    return {
-        pools: useSelector<State, Pool | undefined>(state => state.pools.data.find(e => e.poolId === poolId)),
-        loading: useSelector<State, boolean>(state => state.pools.loading)
     }
 }
