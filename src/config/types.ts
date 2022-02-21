@@ -62,8 +62,8 @@ export interface RewardInfo {
 }
 
 export interface NftDeposit {
-    tokenId: BigNumber
-    amount: BigNumber
+    tokenId: number
+    amount: number
 }
 
 export interface UserInfo {

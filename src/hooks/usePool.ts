@@ -1,8 +1,10 @@
-import { awaitTransaction, STATE, toBigNumber, toLowerUnit, toUpperUnit } from "@react-dapp/utils"
-import BigNumber from "bignumber.js"
-import { Pool, DepositInfo, WithdrawInfo, HarvestInfo } from "../config/types"
+import { awaitTransaction, STATE, toBigNumber, toLowerUnit, useERC1155Approval, useERC20Approval, useInputValue, ZERO_ADDRESS } from "@react-dapp/utils"
+import { Pool, DepositInfo, WithdrawInfo, HarvestInfo, NftDeposit } from "../config/types"
 import { useEffect, useState } from "react"
 import { useCardHandlerContract, useNftVillageChiefContract, useProjectHandlerContract } from "./useContracts"
+import { usePools } from "../state/hooks"
+import { FARM_ADDRESS, POOL_CARDS_ADDRESS, PROJECT_ID } from "../config"
+import BigNumber from "bignumber.js"
 
 export const useAddPool = () => {
     const projectHandler = useProjectHandlerContract()
@@ -114,6 +116,107 @@ export const useSinglePool = (projectId: number, poolId: number) => {
     return { pool, loading }
 }
 
+export const usePool = (poolId: number, handleError: (message: string) => void = (message) => console.log(message)) => {
+    const { pools, loading, reload } = usePools()
+    const pool = pools.find(e => e.poolId === poolId)
+
+    const deposit = useDeposit()
+    const withdraw = useWithdraw()
+    const harvest = useHarvest()
+    const stakeTokenApproval = useERC20Approval(pool?.stakedToken, FARM_ADDRESS)
+    const cardsApproval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS)
+
+    const depositAmount = useInputValue(pool?.stakedTokenDetails?.balance?.toFixed() ?? '0', pool?.stakedTokenDetails?.decimals)
+    const withdrawAmount = useInputValue(pool?.userInfo?.amount?.toFixed() ?? '0', pool?.stakedTokenDetails?.decimals)
+
+    const handleDeposit = async (depositFeeCards: NftDeposit[] = [], harvestCards: NftDeposit[] = [], multiplierCards: NftDeposit[] = [], withdrawFeeCards: NftDeposit[] = [], referrer: string = ZERO_ADDRESS) => {
+        if (!stakeTokenApproval.isApproved && !pool?.poolCardsApproved) {
+            handleError('Please approved your NFT before using this pool')
+            return
+        }
+        if (depositAmount.error) {
+            handleError(depositAmount.error)
+            return
+        }
+
+        const response = await deposit.deposit({
+            projectId: PROJECT_ID, poolId: poolId, amount: depositAmount.getValue(), depositFeeCards, harvestCards, multiplierCards, withdrawFeeCards, referrer: referrer
+        })
+        if (!response.status) handleError(response.error)
+        else {
+            depositAmount.setValue('0')
+            reload()
+        }
+    }
+
+    const handleWithdraw = async () => {
+        if (withdrawAmount.error) {
+            handleError(withdrawAmount.error)
+            return
+        }
+
+        const response = await withdraw.withdraw({
+            projectId: PROJECT_ID, poolId: poolId, amount: withdrawAmount.getValue()
+        })
+        if (!response.status) handleError(response.error)
+        else {
+            withdrawAmount.setValue('0')
+            reload()
+        }
+    }
+
+    const handleHarvest = async () => {
+        const response = await harvest.harvest({
+            projectId: PROJECT_ID, poolId: poolId
+        })
+        if (!response.status) handleError(response.error)
+        else {
+            reload()
+        }
+    }
+
+    return pool && {
+        liquidity: pool.stats?.liquidity.toFormat(0),
+        totalStaked: toLowerUnit(pool.stakedAmount.toFixed(), pool.stakedTokenDetails?.decimals).toFormat(2),
+        stakedAmount: toLowerUnit(pool.userInfo?.amount?.toFixed() ?? '0', pool.stakedTokenDetails?.decimals).toFormat(2),
+        stakedTokenSymbol: pool.stakedTokenDetails?.symbol,
+        stakedTokenBalance: toLowerUnit(pool.stakedTokenDetails?.balance?.toFixed() ?? '0', pool.stakedTokenDetails?.decimals).toFormat(2),
+        poolSharePercent: pool.userInfo?.amount.div(pool.stakedAmount).times(100).toFixed(2),
+        rewards: pool.rewardInfo.map((e, i) => {
+            return {
+                apy: pool.stats?.apy[i]?.toFixed(0),
+                rewardTokenSymbol: e.details?.symbol,
+                rewards: toLowerUnit(e.rewards.toFixed(), e.details?.decimals).toFormat(4)
+            }
+        }),
+        loading,
+        stakedTokenApproval: {
+            isApproved: (stakeTokenApproval.isApproved || pool.stakeTokenApproved),
+            approve: stakeTokenApproval.approve,
+            approvePending: stakeTokenApproval.txPending
+        },
+        poolCardsApproval: {
+            isApproved: (cardsApproval.isApproved || pool.poolCardsApproved),
+            approve: cardsApproval.approve,
+            approvePending: cardsApproval.txPending
+        },
+        depositInfo: {
+            input: depositAmount,
+            deposit: handleDeposit,
+            pending: deposit.txPending
+        },
+        withdrawInfo: {
+            input: withdrawAmount,
+            withdraw: handleWithdraw,
+            pending: withdraw.txPending
+        },
+        harvestInfo: {
+            harvest: handleHarvest,
+            pending: harvest.txPending
+        }
+    }
+}
+
 export const bigNumberObjtoString = (obj: any) => {
     let transformedObj: any;
 
@@ -144,7 +247,12 @@ export const useDeposit = () => {
     const [txPending, setTxPending] = useState(false)
 
     const deposit = async (stakeInfo: DepositInfo) => {
-        if (!chief) return;
+        if (!chief) return {
+            tx: undefined,
+            receipt: undefined,
+            error: 'Chief Contract not found!',
+            status: false
+        };
 
         setTxPending(true)
         const response = await awaitTransaction(
@@ -166,7 +274,13 @@ export const useWithdraw = () => {
     const [txPending, setTxPending] = useState(false)
 
     const withdraw = async (withdrawInfo: WithdrawInfo) => {
-        if (!chief) return;
+        if (!chief) return {
+            tx: undefined,
+            receipt: undefined,
+            error: 'Chief Contract not found!',
+            status: false
+        };
+
 
         setTxPending(true)
         const response = await awaitTransaction(
@@ -189,7 +303,12 @@ export const useHarvest = () => {
     const [txPending, setTxPending] = useState(false)
 
     const harvest = async (harvestInfo: HarvestInfo) => {
-        if (!chief) return;
+        if (!chief) return {
+            tx: undefined,
+            receipt: undefined,
+            error: 'Chief Contract not found!',
+            status: false
+        };
 
         setTxPending(true)
 

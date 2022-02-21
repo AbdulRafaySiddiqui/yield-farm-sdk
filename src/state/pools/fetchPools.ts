@@ -141,8 +141,8 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
         e.requiredCards = rawRequiredCards?.map((e): NftDeposit => {
             const [tokenId, amount] = e;
             return {
-                tokenId: toBigNumber(tokenId),
-                amount: toBigNumber(amount)
+                tokenId: toBigNumber(tokenId).toNumber(),
+                amount: toBigNumber(amount).toNumber()
             }
         }) ?? []
 
