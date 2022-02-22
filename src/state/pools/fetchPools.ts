@@ -18,10 +18,8 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
     if (!ethersProvider || !account) return;
 
     const EthPriceInBUSD = Object.values(await getLPInfo(ethersProvider, [ETH_USD_PAIR]))[0].token0.price
-
     const projectHandler = new Contract(PROJECT_HANDLER_ADDRESS, PROJECT_HANDLER_ABI, ethersProvider)
     const _project = await projectHandler.getProjectInfo('0');
-
     const project: Project = {
         projectId: projectId,
         admin: _project.admin,
@@ -110,9 +108,8 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
             }],
         })
     }
-
     const resultsCall: ContractCallResults = await multicall.call(poolCallContext);
-
+    
     for (let i = 0; i < project.pools.length; i++) {
         const e = project.pools[i];
 
@@ -179,8 +176,8 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
     for (let i = 0; i < project.pools.length; i++) {
         const pool = project.pools[i]
         const stakeTokenDetails = tokenPrices[pool.stakedToken]
-        project.pools[i].stakedTokenDetails = stakeTokenDetails.details
-        project.pools[i].isLP = stakeTokenDetails.isLP
+        project.pools[i].stakedTokenDetails = stakeTokenDetails?.details
+        project.pools[i].isLP = stakeTokenDetails?.isLP
         if (stakeTokenDetails) {
             project.pools[i].stats = {
                 price: stakeTokenDetails?.details.price,

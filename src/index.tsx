@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { toUpperUnit, useERC20Approval, useERC1155Approval, useEthers, UtilsProvider } from '@react-dapp/utils'
-import { useAddPool, useDeposit, useHarvest, useSetPool, useWithdraw } from './hooks/usePool';
+import { useAddPool, useDeposit, useHarvest, usePool, useSetPool, useWithdraw } from './hooks/usePool';
 import BigNumber from 'bignumber.js';
 import { Pool } from './config/types';
 import { usePools } from './state/hooks';
@@ -43,7 +43,7 @@ const App = () => {
   // const project = useProject(0)
   // const addPool = useAddPool()
   // const setPool = useSetPool()
-  const { pools, loading } = usePools()
+  const pool = usePool(0)
   // const depositHook = useDeposit()
   // const harvestHook = useHarvest()
   // const withdrawHook = useWithdraw()
