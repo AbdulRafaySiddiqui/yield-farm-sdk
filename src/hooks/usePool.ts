@@ -129,7 +129,7 @@ export const usePool = (poolId: number, handleError: (message: string) => void =
     const depositAmount = useInputValue(pool?.stakedTokenDetails?.balance?.toFixed() ?? '0', pool?.stakedTokenDetails?.decimals)
     const withdrawAmount = useInputValue(pool?.userInfo?.amount?.toFixed() ?? '0', pool?.stakedTokenDetails?.decimals)
 
-    const handleDeposit = async (depositFeeCards: NftDeposit[] = [], harvestCards: NftDeposit[] = [], multiplierCards: NftDeposit[] = [], withdrawFeeCards: NftDeposit[] = [], referrer: string = ZERO_ADDRESS) => {
+    const handleDeposit = async (depositFeeCards: NftDeposit[] = [], harvestCards: NftDeposit[] = [], multiplierCards: NftDeposit[] = [], withdrawFeeCards: NftDeposit[] = [], requiredCardId: number, referrer: string = ZERO_ADDRESS) => {
         if (!stakeTokenApproval.isApproved && !pool?.poolCardsApproved) {
             handleError('Please approved your NFT before using this pool')
             return
@@ -140,7 +140,7 @@ export const usePool = (poolId: number, handleError: (message: string) => void =
         }
 
         const response = await deposit.deposit({
-            projectId: PROJECT_ID, poolId: poolId, amount: depositAmount.getValue(), depositFeeCards, harvestCards, multiplierCards, withdrawFeeCards, referrer: referrer
+            projectId: PROJECT_ID, poolId, amount: depositAmount.getValue(), depositFeeCards, harvestCards, multiplierCards, withdrawFeeCards, requiredCardId, referrer: referrer
         })
         if (!response.status) handleError(response.error)
         else {
