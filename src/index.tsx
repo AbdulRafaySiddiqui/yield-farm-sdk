@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { toUpperUnit, useERC20Approval, useERC1155Approval, useEthers, UtilsProvider } from '@react-dapp/utils'
-import { useAddPool, useDeposit, useHarvest, usePool, useSetPool, useWithdraw } from '../src/hooks/usePool';
+import { useAddPool, useDeposit, useHarvest, usePool, useSetPool, useWithdraw } from './hooks/usePool';
 import BigNumber from 'bignumber.js';
-import { Pool } from '../src/config/types';
-import { usePools } from '../src/state/hooks';
+import { Pool } from './config/types';
+import { usePools } from './state/hooks';
 import { Provider } from "react-redux";
-import store from '../src/state/store'
-import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from '../src/config';
+import store from './state/store'
+import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from './config';
 
 console.warn = () => { }
 require('dotenv').config()
@@ -43,6 +43,7 @@ const App = () => {
   // const project = useProject(0)
   // const addPool = useAddPool()
   // const setPool = useSetPool()
+  usePools()
   const pool = usePool(0)
   // const depositHook = useDeposit()
   // const harvestHook = useHarvest()
@@ -50,6 +51,8 @@ const App = () => {
 
   // const erc20Approval = useERC20Approval(pools[0]?.stakedToken, FARM_ADDRESS);
   // const erc1155Approval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
+
+  console.log(pool)
 
   const poolData: Pool = {
     projectId: 0,

@@ -162,7 +162,7 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
         e.stakeTokenApproved = e.stakedTokenStandard === TokenStandard.ERC20 ? toBigNumber(allowance).gt(0) : allowance
 
         // pool cards approval
-        const isApprovedForAll = resultsCall.results[`stakedTokenApproval-${e.poolId}`].callsReturnContext.shift()?.returnValues.shift()
+        const isApprovedForAll = resultsCall.results[`poolCardsApproval-${e.poolId}`].callsReturnContext.shift()?.returnValues.shift()
         e.poolCardsApproved = isApprovedForAll
     }
 
