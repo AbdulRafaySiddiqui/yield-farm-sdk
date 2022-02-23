@@ -176,7 +176,7 @@ export const usePool = (poolId: number, handleError: (message: string) => void =
     }
 
     return pool && {
-        liquidity: pool.stats?.liquidity.toFormat(0),
+        liquidity: pool.stats?.liquidity?.toFormat(0),
         totalStaked: toLowerUnit(pool.stakedAmount.toFixed(), pool.stakedTokenDetails?.decimals).toFormat(2),
         stakedAmount: toLowerUnit(pool.userInfo?.amount?.toFixed() ?? '0', pool.stakedTokenDetails?.decimals).toFormat(2),
         stakedTokenSymbol: pool.stakedTokenDetails?.symbol,

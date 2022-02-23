@@ -18,8 +18,8 @@ export interface Project {
 }
 
 export interface PoolStats {
-    price: BigNumber
-    liquidity: BigNumber
+    price: BigNumber | undefined
+    liquidity: BigNumber | undefined
     apy: (number | undefined | null)[]
 }
 
@@ -45,13 +45,13 @@ export interface Pool {
     stakeTokenApproved?: boolean
     poolCardsApproved?: boolean
     stats?: PoolStats
-    stakedTokenDetails?: TokenDetails
+    stakedTokenDetails?: TokenAndLPDetails
     isLP?: boolean
 }
 
 export interface RewardInfo {
     token: string
-    details?: TokenDetails
+    details?: TokenAndLPDetails
     paused: boolean
     mintable: boolean
     rewardPerBlock: BigNumber
@@ -106,27 +106,39 @@ export interface WithdrawInfo {
     poolId: number
     amount: string
 }
-
 export interface TokenDetails extends Token {
-    price: BigNumber
-}
-
-export interface PairToken extends TokenDetails {
-    lpBalance: BigNumber
+    lp: string
+    totalSupply: BigNumber
     balance: BigNumber
 }
-
+export interface TokenAndPriceDetails extends TokenDetails {
+    price: BigNumber
+}
+export interface LPAndPriceDetails extends Token {
+    price: BigNumber
+    totalSupply: BigNumber
+    balance: BigNumber
+}
+export interface PairTokenAndPriceDetails extends Token {
+    price: BigNumber,
+    totalSupply: BigNumber
+    balance: BigNumber
+    lpBalance: BigNumber
+}
 export interface LPToken extends Token {
     token0Address: string
     token1Address: string
     totalSupply: BigNumber
     balance: BigNumber
 }
-
 export interface LPDetails extends LPToken {
-    token0: PairToken,
-    token1: PairToken,
+    token0: PairTokenAndPriceDetails,
+    token1: PairTokenAndPriceDetails,
+}
+export interface TokenAndLPDetails extends Token {
     totalSupply: BigNumber
+    balance: BigNumber,
+    price?: BigNumber
 }
 
 export interface PoolState {

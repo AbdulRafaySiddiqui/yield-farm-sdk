@@ -4,7 +4,7 @@ import PROJECT_HANDLER_ABI from '../../assets/abi/project_handler.json';
 import CARD_HANDLER_ABI from '../../assets/abi/card_handler.json';
 import FACTORY_ABI from '../../assets/abi/pancakeswap_factory_abi.json';
 import FARM_ABI from '../../assets/abi/farm.json';
-import { LPDetails, LPToken, NftDeposit, Pool, Project, RewardInfo, TokenDetails } from "../../config/types";
+import { LPAndPriceDetails, LPDetails, LPToken, NftDeposit, Pool, Project, RewardInfo, TokenAndLPDetails, TokenAndPriceDetails, TokenDetails } from "../../config/types";
 import {
     ContractCallContext,
     ContractCallResults,
@@ -109,7 +109,7 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
         })
     }
     const resultsCall: ContractCallResults = await multicall.call(poolCallContext);
-    
+
     for (let i = 0; i < project.pools.length; i++) {
         const e = project.pools[i];
 
@@ -178,18 +178,18 @@ const fetchPools = async (ethersProvider: providers.Provider, projectId: number,
         const stakeTokenDetails = tokenPrices[pool.stakedToken]
         project.pools[i].stakedTokenDetails = stakeTokenDetails?.details
         project.pools[i].isLP = stakeTokenDetails?.isLP
-        if (stakeTokenDetails) {
+        if (project.pools[i].stakedTokenDetails) {
             project.pools[i].stats = {
-                price: stakeTokenDetails?.details.price,
-                liquidity: stakeTokenDetails?.details.price.times(toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.details.decimals)),
+                price: stakeTokenDetails.details.price,
+                liquidity: stakeTokenDetails.details.price?.times(toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.details.decimals)),
                 apy: pool.rewardInfo.map((e, j) => {
                     const rewardTokenDetails = tokenPrices[e.token]
                     project.pools[i].rewardInfo[j].details = rewardTokenDetails?.details
                     if (rewardTokenDetails)
                         return getApy(
-                            stakeTokenDetails.details.price.toFixed(),
-                            rewardTokenDetails?.details.price.toFixed(),
-                            toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails?.details.decimals).toFixed(),
+                            stakeTokenDetails.details.price?.toFixed() ?? '0',
+                            rewardTokenDetails.details.price?.toFixed() ?? '0',
+                            toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.details.decimals).toFixed(),
                             toLowerUnit(e.rewardPerBlock.toFixed(), rewardTokenDetails?.details.decimals).toNumber(),
                         )
                 })
@@ -223,28 +223,74 @@ const areLPTokens = async (ethers: providers.Provider, tokens: string[]) => {
     return lpTokens
 }
 
-const findLPTokens = async (ethers: providers.Provider, tokens: string[]) => {
+// return token info and lp
+const getTokenDetails = async (ethers: providers.Provider, tokens: string[], userAccount: string) => {
     if (tokens.length === 0) return {}
     const multicall = new Multicall({ ethersProvider: ethers, tryAggregate: false });
-    const call = {
-        reference: 'getPair',
-        contractAddress: EXCHANGE_FACTORY_ADDRESS,
-        abi: FACTORY_ABI,
-        calls: tokens.map((token) => {
-            return {
-                reference: token,
+    const calls: ContractCallContext[] = []
+    for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        calls.push({
+            reference: `getPair-${token}`,
+            contractAddress: EXCHANGE_FACTORY_ADDRESS,
+            abi: FACTORY_ABI,
+            calls: [{
+                reference: `getPair`,
                 methodName: "getPair",
                 methodParameters: [token, WRAPPED_NATIVE],
-            }
+            }]
+        })
+        calls.push({
+            reference: `tokenDetails-${token}`,
+            contractAddress: token,
+            abi: ERC20_ABI,
+            calls: [
+                {
+                    reference: "name",
+                    methodName: "name",
+                    methodParameters: [],
+                },
+                {
+                    reference: "symbol",
+                    methodName: "symbol",
+                    methodParameters: [],
+                },
+                {
+                    reference: "decimals",
+                    methodName: "decimals",
+                    methodParameters: [],
+                },
+                {
+                    reference: "totalSupply",
+                    methodName: "totalSupply",
+                    methodParameters: [],
+                },
+                {
+                    reference: "balanceOf",
+                    methodName: "balanceOf",
+                    methodParameters: [userAccount],
+                }]
         })
     }
-    const data = (await multicall.call(call)).results.getPair.callsReturnContext
+
+    const data = (await multicall.call(calls)).results
+    console.log('tokendetails', data)
     const lpTokens: {
-        [key: string]: string
+        [key: string]: TokenDetails
     } = {}
-    for (let i = 0; i < data.length; i++) {
-        const element = data[i];
-        lpTokens[element.reference] = element.returnValues[0]
+    for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        const lp = data[`getPair-${token}`].callsReturnContext[0].returnValues[0];
+        const details = data[`tokenDetails-${token}`].callsReturnContext;
+        lpTokens[token] = {
+            address: token,
+            name: details[0].returnValues[0],
+            symbol: details[1].returnValues[0],
+            decimals: details[2].returnValues[0],
+            totalSupply: toBigNumber(details[3].returnValues[0]),
+            balance: userAccount === ZERO_ADDRESS ? toBigNumber(0) : toBigNumber(details[4].returnValues[0]),
+            lp: lp
+        }
     }
     return lpTokens
 }
@@ -443,16 +489,16 @@ const getLPInfo = async (ethers: providers.Provider, lpTokens: string[], userAcc
     return lpDetails
 }
 
-// return the price balane and other props of token
-const getTokenDetails = async (ethers: providers.Provider, tokensList: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
+// return the price balance and other details of token
+const getTokenPriceDetails = async (ethers: providers.Provider, tokensList: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
     if (tokensList.length === 0) return {}
     const tokens = tokensList.filter((e) => e != WRAPPED_NATIVE)
-    const lpTokens = await findLPTokens(ethers, tokens)
-    const lpInfo = await getLPInfo(ethers, Object.values(lpTokens), userAccount)
+    const tokenDetails = await getTokenDetails(ethers, tokens, userAccount)
+    const lpInfo = await getLPInfo(ethers, Object.values(tokenDetails).map(e => e.lp), userAccount)
     // TODO: if LP is BUSD-ETH pair, don't return the multiplied price
-    const tokenPrice: { [key: string]: TokenDetails } = {}
+    const tokenPrice: { [key: string]: TokenAndPriceDetails } = {}
     tokens.forEach((t) => {
-        const e = lpInfo[lpTokens[t]]
+        const e = lpInfo[tokenDetails[t].address]
         if (e) {
             const baseToken = e.token0Address === t ?
                 e.token0 : e.token1
@@ -461,7 +507,8 @@ const getTokenDetails = async (ethers: providers.Provider, tokensList: string[],
                 e.token1.price.times(ethPrice)
 
             tokenPrice[t] = {
-                ...baseToken,
+                ...baseToken, // this is the token from LP pair
+                ...tokenDetails[t], // this is from token details (this has lp)
                 price: usdPrice,
             }
         }
@@ -474,12 +521,15 @@ const getTokenDetails = async (ethers: providers.Provider, tokensList: string[],
             symbol: 'WBNB',
             decimals: 18,
             price: ethPrice,
+            balance: toBigNumber(0),
+            lp: ZERO_ADDRESS,
+            totalSupply: toBigNumber(0)
         }
     return tokenPrice
 }
 
 // return the price balane and other props of lp token
-const getLPDetails = async (ethers: providers.Provider, lpTokens: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
+const getLPPriceDetails = async (ethers: providers.Provider, lpTokens: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
     if (lpTokens.length === 0) return {}
 
     const lpDetails = await getLPInfo(ethers, lpTokens, userAccount)
@@ -488,9 +538,9 @@ const getLPDetails = async (ethers: providers.Provider, lpTokens: string[], ethP
         allPairTokens.push(e.token0Address)
         allPairTokens.push(e.token1Address)
     });
-    const allPairTokensPrice = await getTokenDetails(ethers, allPairTokens, ethPrice, userAccount);
+    const allPairTokensPrice = await getTokenPriceDetails(ethers, allPairTokens, ethPrice, userAccount);
     const lpTvlDetails: {
-        [key: string]: TokenDetails
+        [key: string]: LPAndPriceDetails
     } = {}
     Object.values(lpDetails).forEach((e) => {
         const token0UsdTvl = allPairTokensPrice[e.token0Address].price.times(toLowerUnit(e.token0.lpBalance.toFixed()))
@@ -506,38 +556,49 @@ const getLPDetails = async (ethers: providers.Provider, lpTokens: string[], ethP
 
 const getTokenAndLPPrices = async (ethers: providers.Provider, tokensAndLps: string[], ethPrice: BigNumber, userAccount: string = ZERO_ADDRESS) => {
     // divide the lps and tokens
-    const tokenLPs = await findLPTokens(ethers, tokensAndLps)
+    const tokenLPs = await getTokenDetails(ethers, tokensAndLps, userAccount)
     const areLps = await areLPTokens(ethers, tokensAndLps)
     const lps: string[] = []
     const tokens: string[] = []
+    const tokensWithoutLp: string[] = []
     tokensAndLps.forEach((e) => {
         if (areLps[e]) lps.push(e)
-        else if (tokenLPs[e] !== ZERO_ADDRESS) tokens.push(e)
-        // if token don't have lp pair, do nothing
+        else if (tokenLPs[e].lp !== ZERO_ADDRESS) tokens.push(e)
+        tokensWithoutLp.push(e)
     })
-    const tokensPrices = await getTokenDetails(ethers, tokens, ethPrice, userAccount)
-    const lpPrices = await getLPDetails(ethers, lps, ethPrice, userAccount)
+    const tokenWithLpDetails = await getTokenPriceDetails(ethers, tokens, ethPrice, userAccount)
+    const tokenWithoutLpDetails = await getTokenDetails(ethers, tokensWithoutLp, userAccount)
+    const lpDetails = await getLPPriceDetails(ethers, lps, ethPrice, userAccount)
     const prices: {
         [key: string]: {
             isLP: boolean
-            details: TokenDetails
+            details: TokenAndLPDetails
         }
     } = {}
     // add token prices
-    for (const key in tokensPrices) {
-        if (Object.prototype.hasOwnProperty.call(tokensPrices, key)) {
+    for (const key in tokenWithLpDetails) {
+        if (Object.prototype.hasOwnProperty.call(tokenWithLpDetails, key)) {
             prices[key] = {
                 isLP: false,
-                details: tokensPrices[key]
+                details: tokenWithLpDetails[key]
             }
         }
     }
     // add lp prices
-    for (const key in lpPrices) {
-        if (Object.prototype.hasOwnProperty.call(lpPrices, key)) {
+    for (const key in lpDetails) {
+        if (Object.prototype.hasOwnProperty.call(lpDetails, key)) {
             prices[key] = {
                 isLP: true,
-                details: lpPrices[key]
+                details: lpDetails[key]
+            }
+        }
+    }
+    // add token without lp details
+    for (const key in tokenWithoutLpDetails) {
+        if (Object.prototype.hasOwnProperty.call(tokenWithoutLpDetails, key)) {
+            prices[key] = {
+                isLP: true,
+                details: tokenWithoutLpDetails[key]
             }
         }
     }
