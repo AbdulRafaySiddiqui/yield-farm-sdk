@@ -91,6 +91,7 @@ export interface DepositInfo {
   withdrawFeeCards: NftDeposit[];
   harvestCards: NftDeposit[];
   multiplierCards: NftDeposit[];
+  requiredCards: NftDeposit[];
   referrer: string;
 }
 
