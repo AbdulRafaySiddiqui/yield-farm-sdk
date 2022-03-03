@@ -371,11 +371,6 @@
         "type": "tuple[]"
       },
       {
-        "internalType": "uint256",
-        "name": "requiredCardId",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "referrer",
         "type": "address"

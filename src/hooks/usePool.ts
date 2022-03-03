@@ -184,7 +184,6 @@ export const usePool = (
     harvestCards: NftDeposit[] = [],
     multiplierCards: NftDeposit[] = [],
     withdrawFeeCards: NftDeposit[] = [],
-    requiredCardId: number,
     referrer: string = ZERO_ADDRESS
   ) => {
     if (!stakeTokenApproval.isApproved && !pool?.poolCardsApproved) {
@@ -204,7 +203,6 @@ export const usePool = (
       harvestCards,
       multiplierCards,
       withdrawFeeCards,
-      requiredCardId,
       referrer: referrer,
     });
     if (!response.status) handleError(response.error);
