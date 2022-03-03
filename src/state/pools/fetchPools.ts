@@ -83,6 +83,7 @@ const fetchPools = async (
                 minWithdrawlFee: toBigNumber(e.minWithdrawlFee).toNumber(),
                 maxWithdrawlFee: toBigNumber(e.maxWithdrawlFee).toNumber(),
                 totalShares: toBigNumber(e.totalShares),
+                minRequiredCards: toBigNumber(e.minRequiredCards).toNumber(),
                 withdrawlFeeReliefInterval: e.withdrawlFeeReliefInterval,
                 requiredCards: [],
                 rewardInfo: [],
