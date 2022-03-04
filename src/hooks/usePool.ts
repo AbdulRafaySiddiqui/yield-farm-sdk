@@ -196,9 +196,9 @@ export const usePool = (
 
     const handleDeposit = async (
         depositFeeCards: NftDeposit[] = [],
+        withdrawFeeCards: NftDeposit[] = [],
         harvestCards: NftDeposit[] = [],
         multiplierCards: NftDeposit[] = [],
-        withdrawFeeCards: NftDeposit[] = [],
         requiredCards: NftDeposit[] = [],
         referrer: string = ZERO_ADDRESS
     ) => {
@@ -216,9 +216,9 @@ export const usePool = (
             poolId,
             amount: depositAmount.getValue(),
             depositFeeCards,
+            withdrawFeeCards,
             harvestCards,
             multiplierCards,
-            withdrawFeeCards,
             requiredCards,
             referrer: referrer,
         });
