@@ -43,8 +43,10 @@ export interface Pool {
     minRequiredCards: number;
     userInfo?: UserInfo;
     userRewardInfo?: UserRewardInfo[];
+    nftDepositInfo?: NftDepositInfo;
     stakeTokenApproved?: boolean;
-    poolCardsApproved?: boolean;
+    farmApproved?: boolean;
+    cardHandlerApproved?: boolean;
     stats?: PoolStats;
     stakedTokenDetails?: TokenAndLPDetails;
     isLP?: boolean;
@@ -81,6 +83,14 @@ export interface UserInfo {
 export interface UserRewardInfo {
     rewardDebt: BigNumber;
     rewardLockedUp: number;
+}
+
+export interface NftDepositInfo {
+    depositFeeCards: NftDeposit[];
+    withdrawFeeCards: NftDeposit[];
+    harvestCards: NftDeposit[];
+    multiplierCards: NftDeposit[];
+    requiredCards: NftDeposit[];
 }
 
 // order should be same as in contract

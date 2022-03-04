@@ -24,7 +24,12 @@ import {
     useProjectHandlerContract,
 } from "./useContracts";
 import { useLoadPools, usePools } from "../state/hooks";
-import { FARM_ADDRESS, POOL_CARDS_ADDRESS, PROJECT_ID } from "../config";
+import {
+    CARD_HANDLER_ADDRESS,
+    FARM_ADDRESS,
+    POOL_CARDS_ADDRESS,
+    PROJECT_ID,
+} from "../config";
 import { useSelector } from "react-redux";
 
 export const useAddPool = () => {
@@ -183,7 +188,11 @@ export const usePool = (
         pool?.stakedToken,
         FARM_ADDRESS
     );
-    const cardsApproval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
+    const farmApproval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
+    const cardsHandlerApproval = useERC1155Approval(
+        POOL_CARDS_ADDRESS,
+        CARD_HANDLER_ADDRESS
+    );
 
     const depositAmount = useInputValue(
         pool?.stakedTokenDetails?.balance?.toFixed() ?? "0",
@@ -202,7 +211,7 @@ export const usePool = (
         requiredCards: NftDeposit[] = [],
         referrer: string = ZERO_ADDRESS
     ) => {
-        if (!stakeTokenApproval.isApproved && !pool?.poolCardsApproved) {
+        if (!stakeTokenApproval.isApproved && !pool?.farmApproved) {
             handleError("Please approved your NFT before using this pool");
             return;
         }
@@ -227,6 +236,7 @@ export const usePool = (
             depositAmount.setValue("0");
             load();
         }
+        return response;
     };
 
     const handleWithdraw = async () => {
@@ -245,6 +255,7 @@ export const usePool = (
             withdrawAmount.setValue("0");
             load();
         }
+        return response;
     };
 
     const handleHarvest = async () => {
@@ -256,6 +267,7 @@ export const usePool = (
         else {
             load();
         }
+        return response;
     };
 
     return (
@@ -295,10 +307,16 @@ export const usePool = (
                 approve: stakeTokenApproval.approve,
                 approvePending: stakeTokenApproval.txPending,
             },
-            poolCardsApproval: {
-                isApproved: cardsApproval.isApproved || pool.poolCardsApproved,
-                approve: cardsApproval.approve,
-                approvePending: cardsApproval.txPending,
+            farmApproval: {
+                isApproved: farmApproval.isApproved || pool.farmApproved,
+                approve: farmApproval.approve,
+                approvePending: farmApproval.txPending,
+            },
+            cardHandlerApproval: {
+                isApproved:
+                    cardsHandlerApproval.isApproved || pool.cardHandlerApproved,
+                approve: cardsHandlerApproval.approve,
+                approvePending: cardsHandlerApproval.txPending,
             },
             depositInfo: {
                 input: depositAmount,

@@ -16,6 +16,7 @@ import {
     LP_NAME,
     POOL_CARDS_ADDRESS,
     PROJECT_HANDLER_ADDRESS,
+    PROJECT_ID,
     WRAPPED_NATIVE,
 } from "../../config";
 import PROJECT_HANDLER_ABI from "../../assets/abi/project_handler.json";
@@ -179,6 +180,30 @@ const fetchPools = async (
                 },
             ],
         });
+        poolCallContext.push({
+            reference: `poolCardsCardHandlerApproval-${e.poolId}`,
+            contractAddress: POOL_CARDS_ADDRESS,
+            abi: ERC1155_ABI,
+            calls: [
+                {
+                    reference: "poolCardsCardHandlerApproval",
+                    methodName: "isApprovedForAll",
+                    methodParameters: [account, CARD_HANDLER_ADDRESS],
+                },
+            ],
+        });
+        poolCallContext.push({
+            reference: `getUserCardsInfo-${e.poolId}`,
+            contractAddress: CARD_HANDLER_ADDRESS,
+            abi: CARD_HANDLER_ABI,
+            calls: [
+                {
+                    reference: "getUserCardsInfo",
+                    methodName: "getUserCardsInfo",
+                    methodParameters: [PROJECT_ID, e.poolId, account],
+                },
+            ],
+        });
     }
     const resultsCall: ContractCallResults = await multicall.call(
         poolCallContext
@@ -278,7 +303,24 @@ const fetchPools = async (
         ].callsReturnContext
             .shift()
             ?.returnValues.shift();
-        e.poolCardsApproved = isApprovedForAll;
+        e.farmApproved = isApprovedForAll;
+
+        // pool cards card handler approval
+        const isCardHandlerApprovedForAll = resultsCall.results[
+            `poolCardsCardHandlerApproval-${e.poolId}`
+        ].callsReturnContext
+            .shift()
+            ?.returnValues.shift();
+        e.cardHandlerApproved = isCardHandlerApprovedForAll;
+
+        // nft deposit info
+        const nftDepositInfo = resultsCall.results[
+            `getUserCardsInfo-${e.poolId}`
+        ].callsReturnContext
+            .shift()
+            ?.returnValues.shift();
+        e.nftDepositInfo = nftDepositInfo;
+        console.log("nftDepositInfo", nftDepositInfo);
     }
 
     // get pool stats
