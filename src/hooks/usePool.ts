@@ -354,7 +354,6 @@ export const useDeposit = () => {
         const response = await awaitTransaction(
             chief.deposit(...bigNumberObjtoString(Object.values(stakeInfo)))
         );
-        console.log(response);
         setTxPending(false);
 
         return response;
@@ -380,8 +379,6 @@ export const useWithdraw = () => {
         const response = await awaitTransaction(
             chief.withdraw(...Object.values(withdrawInfo))
         );
-        console.log(response);
-
         setTxPending(false);
 
         return response;
@@ -404,7 +401,6 @@ export const useHarvest = () => {
             };
 
         setTxPending(true);
-
         const response = await awaitTransaction(
             chief.deposit(
                 harvestInfo.projectId,
@@ -418,7 +414,6 @@ export const useHarvest = () => {
                 "0x0000000000000000000000000000000000000000"
             )
         );
-        console.log(response);
         setTxPending(false);
 
         return response;
