@@ -224,7 +224,10 @@ export const usePool = (
         const response = await deposit.deposit({
             projectId: PROJECT_ID,
             poolId,
-            amount: depositAmount.getValue(),
+            amount:
+                pool?.stakedTokenStandard === TokenStandard.NONE
+                    ? "1" // temp fix
+                    : depositAmount.getValue(),
             depositFeeCards,
             withdrawFeeCards,
             harvestCards,
