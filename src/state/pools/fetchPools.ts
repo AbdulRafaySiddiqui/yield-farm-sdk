@@ -341,6 +341,7 @@ const fetchPools = async (
     );
     for (let i = 0; i < project.pools.length; i++) {
         const pool = project.pools[i];
+        project.pools[i].tokenPrices = tokenPrices;
         const stakeTokenDetails = tokenPrices[pool.stakedToken];
         project.pools[i].stakedTokenDetails = stakeTokenDetails?.details;
         project.pools[i].isLP = stakeTokenDetails?.isLP;

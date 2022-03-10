@@ -56,6 +56,12 @@ export interface Pool {
     stats?: PoolStats;
     stakedTokenDetails?: TokenAndLPDetails;
     isLP?: boolean;
+    tokenPrices?: {
+        [key: string]: {
+            isLP: boolean;
+            details: TokenAndLPDetails;
+        };
+    };
 }
 
 export interface RewardInfo {
