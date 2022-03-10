@@ -5,7 +5,6 @@ import {
     getApy,
     LP_ABI,
     toBigNumber,
-    TokenStandard,
     toLowerUnit,
 } from "@react-dapp/utils";
 import {
@@ -34,6 +33,7 @@ import {
     TokenAndLPDetails,
     TokenAndPriceDetails,
     TokenDetails,
+    TokenStandard,
 } from "../../config/types";
 import {
     ContractCallContext,
@@ -148,26 +148,28 @@ const fetchPools = async (
                 },
             ],
         });
-        poolCallContext.push({
-            reference: `stakedTokenApproval-${e.poolId}`,
-            contractAddress: e.stakedToken,
-            abi:
-                e.stakedTokenStandard === TokenStandard.ERC20
-                    ? ERC20_ABI
-                    : e.stakedTokenStandard === TokenStandard.ERC721
-                    ? ERC721_ABI
-                    : ERC1155_ABI,
-            calls: [
-                {
-                    reference: "stakedTokenApproval",
-                    methodName:
-                        e.stakedTokenStandard === TokenStandard.ERC20
-                            ? "allowance"
-                            : "isApprovedForAll",
-                    methodParameters: [account, FARM_ADDRESS],
-                },
-            ],
-        });
+        if (e.stakedTokenStandard !== TokenStandard.NONE) {
+            poolCallContext.push({
+                reference: `stakedTokenApproval-${e.poolId}`,
+                contractAddress: e.stakedToken,
+                abi:
+                    e.stakedTokenStandard === TokenStandard.ERC20
+                        ? ERC20_ABI
+                        : e.stakedTokenStandard === TokenStandard.ERC721
+                        ? ERC721_ABI
+                        : ERC1155_ABI,
+                calls: [
+                    {
+                        reference: "stakedTokenApproval",
+                        methodName:
+                            e.stakedTokenStandard === TokenStandard.ERC20
+                                ? "allowance"
+                                : "isApprovedForAll",
+                        methodParameters: [account, FARM_ADDRESS],
+                    },
+                ],
+            });
+        }
         poolCallContext.push({
             reference: `poolCardsApproval-${e.poolId}`,
             contractAddress: POOL_CARDS_ADDRESS,
@@ -289,7 +291,7 @@ const fetchPools = async (
         // staked token approval
         const allowance = resultsCall.results[
             `stakedTokenApproval-${e.poolId}`
-        ].callsReturnContext
+        ]?.callsReturnContext
             .shift()
             ?.returnValues.shift();
         e.stakeTokenApproved =
@@ -327,11 +329,9 @@ const fetchPools = async (
     let tokens: string[] = [];
     for (let i = 0; i < project.pools.length; i++) {
         const element = project.pools[i];
-        tokens = [
-            ...tokens,
-            element.stakedToken,
-            ...element.rewardInfo.map((e) => e.token),
-        ];
+        tokens = [...tokens, ...element.rewardInfo.map((e) => e.token)];
+        if (element.stakedTokenStandard === TokenStandard.ERC20)
+            tokens.push(element.stakedToken);
     }
     const tokenPrices = await getTokenAndLPPrices(
         ethersProvider,

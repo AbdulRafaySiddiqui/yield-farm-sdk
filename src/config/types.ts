@@ -1,10 +1,16 @@
-import { Token, TokenStandard } from "@react-dapp/utils";
+import { Token } from "@react-dapp/utils";
 import BigNumber from "bignumber.js";
 
 export interface FarmSdkConfig {
     provider: any;
 }
 
+export enum TokenStandard {
+    ERC20 = 0,
+    ERC721 = 1,
+    ERC1155 = 2,
+    NONE = 3,
+}
 export interface Project {
     projectId: number;
     admin: string;
