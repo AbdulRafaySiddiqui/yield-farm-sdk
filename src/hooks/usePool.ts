@@ -251,7 +251,7 @@ export const usePool = (
             poolId: poolId,
             amount:
                 pool?.stakedTokenStandard === TokenStandard.NONE
-                    ? pool.stakedAmount.toFixed()
+                    ? "1" // temp fix
                     : withdrawAmount.getValue(),
         });
         if (!response.status) handleError(response.error);
