@@ -16,6 +16,7 @@ import {
     HarvestInfo,
     NftDeposit,
     State,
+    TokenStandard,
 } from "../config/types";
 import { useEffect, useState } from "react";
 import {
@@ -248,7 +249,10 @@ export const usePool = (
         const response = await withdraw.withdraw({
             projectId: PROJECT_ID,
             poolId: poolId,
-            amount: withdrawAmount.getValue(),
+            amount:
+                pool?.stakedTokenStandard === TokenStandard.NONE
+                    ? pool.stakedAmount.toFixed()
+                    : withdrawAmount.getValue(),
         });
         if (!response.status) handleError(response.error);
         else {
