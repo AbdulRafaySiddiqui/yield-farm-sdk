@@ -316,13 +316,26 @@ const fetchPools = async (
         e.cardHandlerApproved = isCardHandlerApprovedForAll;
 
         // nft deposit info
-        const nftDepositInfo = resultsCall.results[
-            `getUserCardsInfo-${e.poolId}`
-        ].callsReturnContext
-            .shift()
-            ?.returnValues.shift();
-        e.nftDepositInfo = nftDepositInfo;
-        console.log("nftDepositInfo", nftDepositInfo);
+        const [required, feeDiscount, harvest, multiplier] =
+            resultsCall.results[
+                `getUserCardsInfo-${e.poolId}`
+            ].callsReturnContext
+                .shift()
+                ?.returnValues.shift();
+        e.nftDepositInfo = {
+            requiredCards: required
+                ? [
+                      {
+                          tokenId: toBigNumber(required[0]).toNumber(),
+                          amount: toBigNumber(required[1]).toNumber(),
+                      },
+                  ]
+                : [],
+            depositFeeCards: [],
+            harvestCards: [],
+            multiplierCards: [],
+            withdrawFeeCards: [],
+        };
     }
 
     // get pool stats
