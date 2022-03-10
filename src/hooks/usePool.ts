@@ -177,7 +177,7 @@ export const usePool = (
     handleError: (message: string) => void = (message) => console.log(message)
 ) => {
     const pool = useSelector<State, Pool | undefined>((state) =>
-        state.pools.data.find((e) => e.poolId === poolId)
+        state.pools.data?.find((e) => e.poolId === poolId)
     );
     const { load, loading } = useLoadPools();
 
@@ -283,7 +283,7 @@ export const usePool = (
             ).toFormat(2),
             stakedTokenSymbol: pool.stakedTokenDetails?.symbol,
             stakedTokenBalance: toLowerUnit(
-                pool.stakedTokenDetails?.balance?.toFixed() ?? "0",
+                toBigNumber(pool.stakedTokenDetails?.balance).toString() ?? "0",
                 pool.stakedTokenDetails?.decimals
             ).toFormat(2),
             poolSharePercent: pool.userInfo?.amount
