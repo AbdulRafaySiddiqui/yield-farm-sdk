@@ -14,13 +14,13 @@ import {
     usePool,
     useSetPool,
     useWithdraw,
-} from "./hooks/usePool";
+} from "../src/hooks/usePool";
 import BigNumber from "bignumber.js";
-import { Pool } from "./config/types";
-import { usePools } from "./state/hooks";
+import { Pool } from "../src/config/types";
+import { usePools } from "../src/state/hooks";
 import { Provider } from "react-redux";
-import store from "./state/store";
-import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from "./config";
+import store from "../src/state/store";
+import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from "../src/config";
 
 console.warn = () => {};
 require("dotenv").config();
