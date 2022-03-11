@@ -56,7 +56,7 @@ const App = () => {
     // const addPool = useAddPool()
     // const setPool = useSetPool()
     usePools();
-    const pool = usePool(0);
+    const pool = usePool(7);
     // const depositHook = useDeposit()
     // const harvestHook = useHarvest()
     // const withdrawHook = useWithdraw()
