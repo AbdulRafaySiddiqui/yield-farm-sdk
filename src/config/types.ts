@@ -129,6 +129,11 @@ export interface WithdrawInfo {
     poolId: number;
     amount: string;
 }
+export interface WithdrawMultiplierCardsInfo {
+    projectId: number;
+    poolId: number;
+    cards: NftDeposit[];
+}
 export interface TokenDetails extends Token {
     lp: string;
     totalSupply: BigNumber;
