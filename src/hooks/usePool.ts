@@ -290,12 +290,8 @@ export const usePool = (
             ).toFormat(2),
             stakedTokenSymbol: pool.stakedTokenDetails?.symbol,
             stakedTokenBalance: toLowerUnit(
-<<<<<<< HEAD
-                pool.stakedTokenDetails?.balance.toString() ?? "0",
-=======
                 toBigNumber(pool.stakedTokenDetails?.balance ?? 0).toString() ??
                     "0",
->>>>>>> a099cf77dd9d02219c7246e75b2ba792995af97b
                 pool.stakedTokenDetails?.decimals
             ).toFormat(2),
             poolSharePercent: pool.userInfo?.amount
