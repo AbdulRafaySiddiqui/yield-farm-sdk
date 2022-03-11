@@ -16,6 +16,7 @@ import {
     HarvestInfo,
     NftDeposit,
     State,
+    TokenStandard,
 } from "../config/types";
 import { useEffect, useState } from "react";
 import {
@@ -223,7 +224,10 @@ export const usePool = (
         const response = await deposit.deposit({
             projectId: PROJECT_ID,
             poolId,
-            amount: depositAmount.getValue(),
+            amount:
+                pool?.stakedTokenStandard === TokenStandard.NONE
+                    ? "1" // temp fix
+                    : depositAmount.getValue(),
             depositFeeCards,
             withdrawFeeCards,
             harvestCards,
@@ -248,7 +252,10 @@ export const usePool = (
         const response = await withdraw.withdraw({
             projectId: PROJECT_ID,
             poolId: poolId,
-            amount: withdrawAmount.getValue(),
+            amount:
+                pool?.stakedTokenStandard === TokenStandard.NONE
+                    ? "1" // temp fix
+                    : withdrawAmount.getValue(),
         });
         if (!response.status) handleError(response.error);
         else {
@@ -283,7 +290,12 @@ export const usePool = (
             ).toFormat(2),
             stakedTokenSymbol: pool.stakedTokenDetails?.symbol,
             stakedTokenBalance: toLowerUnit(
+<<<<<<< HEAD
                 pool.stakedTokenDetails?.balance.toString() ?? "0",
+=======
+                toBigNumber(pool.stakedTokenDetails?.balance ?? 0).toString() ??
+                    "0",
+>>>>>>> a099cf77dd9d02219c7246e75b2ba792995af97b
                 pool.stakedTokenDetails?.decimals
             ).toFormat(2),
             poolSharePercent: pool.userInfo?.amount
