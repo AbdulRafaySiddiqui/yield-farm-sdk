@@ -316,24 +316,38 @@ const fetchPools = async (
         e.cardHandlerApproved = isCardHandlerApprovedForAll;
 
         // nft deposit info
-        const [required, feeDiscount, harvest, multiplier] =
-            resultsCall.results[
-                `getUserCardsInfo-${e.poolId}`
-            ].callsReturnContext
-                .shift()
-                ?.returnValues.shift();
+        const responseForGetUserCardsInfo =
+            resultsCall.results[`getUserCardsInfo-${e.poolId}`];
+        const shifted = responseForGetUserCardsInfo.callsReturnContext.shift();
+
+        const returnValues = shifted?.returnValues;
+        console.log("return shifted", returnValues);
+
+        const [required, feeDiscount, harvest, multiplier] = returnValues || [];
+
+        const reformatCards = (cards:any) =>{
+            cards = cards.map((item: any) => ({
+                tokenId: toBigNumber(item[0]).toNumber(),
+                amount: toBigNumber(item[1]).toNumber(),
+            }));
+            let arr :{tokenId:number,amount:number}[]= [];
+            cards.forEach((item:{tokenId:number,amount:number})=>{
+                if(arr && arr.some(i=>i.tokenId === item.tokenId)){
+                    arr.find(i=>i.tokenId === item.tokenId).amount += item.amount;
+                    return;
+                }else{
+                    arr.push(item);
+                }
+            })
+            cards = arr;
+            return arr;
+        }
+
         e.nftDepositInfo = {
-            requiredCards: required
-                ? [
-                      {
-                          tokenId: toBigNumber(required[0]).toNumber(),
-                          amount: toBigNumber(required[1]).toNumber(),
-                      },
-                  ]
-                : [],
-            depositFeeCards: [],
-            harvestCards: [],
-            multiplierCards: [],
+            requiredCards: reformatCards(required),
+            depositFeeCards: reformatCards(feeDiscount),
+            harvestCards: reformatCards(harvest),
+            multiplierCards: reformatCards(multiplier),
             withdrawFeeCards: [],
         };
     }
