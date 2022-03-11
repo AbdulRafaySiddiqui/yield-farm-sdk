@@ -17,6 +17,8 @@ import {
     NftDeposit,
     State,
     TokenStandard,
+    WithdrawMultiplierCardsInfo,
+    WithdrawHarvestCardsInfo,
 } from "../config/types";
 import { useEffect, useState } from "react";
 import {
@@ -265,6 +267,32 @@ export const usePool = (
         return response;
     };
 
+    const handleWithdrawMultiplierCards = async (cards: NftDeposit[]) => {
+        const response = await withdraw.withdrawMultiplierCards({
+            projectId: PROJECT_ID,
+            poolId: poolId,
+            cards,
+        });
+        if (!response.status) handleError(response.error);
+        else {
+            load();
+        }
+        return response;
+    };
+
+    const handleWithdrawHarvestCards = async (cards: NftDeposit[]) => {
+        const response = await withdraw.withdrawMultiplierCards({
+            projectId: PROJECT_ID,
+            poolId: poolId,
+            cards,
+        });
+        if (!response.status) handleError(response.error);
+        else {
+            load();
+        }
+        return response;
+    };
+
     const handleHarvest = async () => {
         const response = await harvest.harvest({
             projectId: PROJECT_ID,
@@ -335,6 +363,8 @@ export const usePool = (
                 input: withdrawAmount,
                 withdraw: handleWithdraw,
                 pending: withdraw.txPending,
+                withdrawHarvestCards: handleWithdrawHarvestCards,
+                withdrawMultiplierCards: handleWithdrawMultiplierCards,
             },
             harvestInfo: {
                 harvest: handleHarvest,
@@ -392,7 +422,49 @@ export const useWithdraw = () => {
         return response;
     };
 
-    return { withdraw, txPending };
+    const withdrawMultiplierCards = async (
+        info: WithdrawMultiplierCardsInfo
+    ) => {
+        if (!chief)
+            return {
+                tx: undefined,
+                receipt: undefined,
+                error: "Chief Contract not found!",
+                status: false,
+            };
+
+        setTxPending(true);
+        const response = await awaitTransaction(
+            chief.withdrawMultiplierCard(...Object.values(info))
+        );
+        setTxPending(false);
+
+        return response;
+    };
+    const withdrawHarvestCards = async (info: WithdrawHarvestCardsInfo) => {
+        if (!chief)
+            return {
+                tx: undefined,
+                receipt: undefined,
+                error: "Chief Contract not found!",
+                status: false,
+            };
+
+        setTxPending(true);
+        const response = await awaitTransaction(
+            chief.withdrawHarvestCard(...Object.values(info))
+        );
+        setTxPending(false);
+
+        return response;
+    };
+
+    return {
+        withdraw,
+        withdrawMultiplierCards,
+        withdrawHarvestCards,
+        txPending,
+    };
 };
 
 export const useHarvest = () => {
