@@ -3,7 +3,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_chief",
+                "name": "_elvantisSpaceMoon",
                 "type": "address"
             }
         ],
@@ -168,6 +168,19 @@
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "elvantisSpaceMoon",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -297,19 +310,6 @@
                 "internalType": "struct BaseStructs.NftDepositInfo",
                 "name": "",
                 "type": "tuple"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "nftVillageChief",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -485,7 +485,7 @@
         "name": "poolcards",
         "outputs": [
             {
-                "internalType": "contract INFTVillageCards",
+                "internalType": "contract IElvantisPoolCards",
                 "name": "",
                 "type": "address"
             }
@@ -517,40 +517,11 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "requiredCardDeposited",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
                 "name": "_projectId",
                 "type": "uint256"
             },
             {
-                "internalType": "contract INFTVillageCards",
+                "internalType": "contract IElvantisPoolCards",
                 "name": "_poolcard",
                 "type": "address"
             }
@@ -654,35 +625,6 @@
             }
         ],
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "validRequiredCardAmount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {
