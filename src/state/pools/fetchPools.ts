@@ -6,6 +6,7 @@ import {
     LP_ABI,
     toBigNumber,
     toLowerUnit,
+    ZERO_ADDRESS,
 } from "@react-dapp/utils";
 import {
     CARD_HANDLER_ADDRESS,
@@ -42,7 +43,6 @@ import {
 } from "ethereum-multicall";
 import BigNumber from "bignumber.js";
 import { Contract, providers } from "ethers";
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const fetchPools = async (
     ethersProvider: providers.Provider,
@@ -776,7 +776,7 @@ const getTokenPriceDetails = async (
     // TODO: if LP is BUSD-ETH pair, don't return the multiplied price
     const tokenPrice: { [key: string]: TokenAndPriceDetails } = {};
     tokens.forEach((t) => {
-        const e = lpInfo[tokenDetails[t].address];
+        const e = lpInfo[tokenDetails[t].lp];
         if (e) {
             const baseToken = e.token0Address === t ? e.token0 : e.token1;
             const usdPrice =
@@ -831,16 +831,16 @@ const getLPPriceDetails = async (
         [key: string]: LPAndPriceDetails;
     } = {};
     Object.values(lpDetails).forEach((e) => {
-        const token0UsdTvl = allPairTokensPrice[e.token0Address]?.price.times(
+        const token0UsdTvl = allPairTokensPrice[e.token0Address].price.times(
             toLowerUnit(e.token0.lpBalance.toFixed())
         );
-        const token1UsdTvl = allPairTokensPrice[e.token1Address]?.price.times(
+        const token1UsdTvl = allPairTokensPrice[e.token1Address].price.times(
             toLowerUnit(e.token1.lpBalance.toFixed())
         );
-        const tvl = token0UsdTvl?.plus(token1UsdTvl);
+        const tvl = token0UsdTvl.plus(token1UsdTvl);
         lpTvlDetails[e.address] = {
             ...lpDetails[e.address],
-            price: tvl?.div(toLowerUnit(e.totalSupply.toFixed())),
+            price: tvl.div(toLowerUnit(e.totalSupply.toFixed())),
         };
     });
     return lpTvlDetails;
@@ -861,7 +861,7 @@ const getTokenAndLPPrices = async (
     tokensAndLps.forEach((e) => {
         if (areLps[e]) lps.push(e);
         else if (tokenLPs[e].lp !== ZERO_ADDRESS) tokens.push(e);
-        tokensWithoutLp.push(e);
+        else tokensWithoutLp.push(e);
     });
     const tokenWithLpDetails = await getTokenPriceDetails(
         ethers,
@@ -908,7 +908,7 @@ const getTokenAndLPPrices = async (
     for (const key in tokenWithoutLpDetails) {
         if (Object.prototype.hasOwnProperty.call(tokenWithoutLpDetails, key)) {
             prices[key] = {
-                isLP: true,
+                isLP: false,
                 details: tokenWithoutLpDetails[key],
             };
         }
