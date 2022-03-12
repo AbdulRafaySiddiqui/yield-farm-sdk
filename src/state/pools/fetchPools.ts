@@ -831,16 +831,16 @@ const getLPPriceDetails = async (
         [key: string]: LPAndPriceDetails;
     } = {};
     Object.values(lpDetails).forEach((e) => {
-        const token0UsdTvl = allPairTokensPrice[e.token0Address].price.times(
+        const token0UsdTvl = allPairTokensPrice[e.token0Address]?.price.times(
             toLowerUnit(e.token0.lpBalance.toFixed())
         );
-        const token1UsdTvl = allPairTokensPrice[e.token1Address].price.times(
+        const token1UsdTvl = allPairTokensPrice[e.token1Address]?.price.times(
             toLowerUnit(e.token1.lpBalance.toFixed())
         );
-        const tvl = token0UsdTvl.plus(token1UsdTvl);
+        const tvl = token0UsdTvl?.plus(token1UsdTvl);
         lpTvlDetails[e.address] = {
             ...lpDetails[e.address],
-            price: tvl.div(toLowerUnit(e.totalSupply.toFixed())),
+            price: tvl?.div(toLowerUnit(e.totalSupply.toFixed())),
         };
     });
     return lpTvlDetails;
