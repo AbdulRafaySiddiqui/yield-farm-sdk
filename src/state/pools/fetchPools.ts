@@ -59,7 +59,7 @@ const fetchPools = async (
         PROJECT_HANDLER_ABI,
         ethersProvider
     );
-    const _project = await projectHandler.getProjectInfo("0");
+    const _project = await projectHandler.getProjectInfo(PROJECT_ID);
     const project: Project = {
         projectId: projectId,
         admin: _project.admin,
@@ -321,27 +321,31 @@ const fetchPools = async (
         const shifted = responseForGetUserCardsInfo.callsReturnContext.shift();
 
         const returnValues = shifted?.returnValues;
-        console.log("return shifted", returnValues);
 
         const [required, feeDiscount, harvest, multiplier] = returnValues || [];
 
-        const reformatCards = (cards:any) =>{
-            cards = cards.map((item: any) => ({
+        const reformatCards = (cards: any) => {
+            const formatedCards: NftDeposit[] = cards.map((item: any) => ({
                 tokenId: toBigNumber(item[0]).toNumber(),
                 amount: toBigNumber(item[1]).toNumber(),
             }));
-            let arr :{tokenId:number,amount:number}[]= [];
-            cards.forEach((item:{tokenId:number,amount:number})=>{
-                if(arr && arr.some(i=>i.tokenId === item.tokenId)){
-                    arr.find(i=>i.tokenId === item.tokenId).amount += item.amount;
-                    return;
-                }else{
-                    arr.push(item);
+            let arr: { tokenId: number; amount: number }[] = [];
+            formatedCards.forEach(
+                (item: { tokenId: number; amount: number }) => {
+                    if (arr && arr.some((i) => i.tokenId === item.tokenId)) {
+                        let i = arr.find(
+                            (i) => i.tokenId === item.tokenId
+                        )?.amount;
+                        i = i ?? 0 + item.amount;
+                        return;
+                    } else {
+                        arr.push(item);
+                    }
                 }
-            })
+            );
             cards = arr;
             return arr;
-        }
+        };
 
         e.nftDepositInfo = {
             requiredCards: reformatCards(required),
