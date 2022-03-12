@@ -325,23 +325,24 @@ const fetchPools = async (
 
         const [required, feeDiscount, harvest, multiplier] = returnValues || [];
 
-        const reformatCards = (cards:any) =>{
+        const reformatCards = (cards: any) => {
             cards = cards.map((item: any) => ({
                 tokenId: toBigNumber(item[0]).toNumber(),
                 amount: toBigNumber(item[1]).toNumber(),
             }));
-            let arr :{tokenId:number,amount:number}[]= [];
-            cards.forEach((item:{tokenId:number,amount:number})=>{
-                if(arr && arr.some(i=>i.tokenId === item.tokenId)){
-                    arr.find(i=>i.tokenId === item.tokenId).amount += item.amount;
+            let arr: { tokenId: number; amount: number }[] = [];
+            cards.forEach((item: { tokenId: number; amount: number }) => {
+                if (arr && arr.some((i) => i.tokenId === item.tokenId)) {
+                    arr.find((i) => i.tokenId === item.tokenId).amount +=
+                        item.amount;
                     return;
-                }else{
+                } else {
                     arr.push(item);
                 }
-            })
+            });
             cards = arr;
             return arr;
-        }
+        };
 
         e.nftDepositInfo = {
             requiredCards: reformatCards(required),
@@ -772,7 +773,7 @@ const getTokenPriceDetails = async (
     // TODO: if LP is BUSD-ETH pair, don't return the multiplied price
     const tokenPrice: { [key: string]: TokenAndPriceDetails } = {};
     tokens.forEach((t) => {
-        const e = lpInfo[tokenDetails[t].address];
+        const e = lpInfo[tokenDetails[t].lp];
         if (e) {
             const baseToken = e.token0Address === t ? e.token0 : e.token1;
             const usdPrice =
@@ -857,7 +858,7 @@ const getTokenAndLPPrices = async (
     tokensAndLps.forEach((e) => {
         if (areLps[e]) lps.push(e);
         else if (tokenLPs[e].lp !== ZERO_ADDRESS) tokens.push(e);
-        tokensWithoutLp.push(e);
+        else tokensWithoutLp.push(e);
     });
     const tokenWithLpDetails = await getTokenPriceDetails(
         ethers,
