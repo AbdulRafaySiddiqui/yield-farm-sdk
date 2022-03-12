@@ -1,4 +1,5 @@
 {
+  "version": "0.0.27",
   "name": "@nftvillage/farms-sdk",
   "source": "src/index.ts",
   "main": "dist/index.cjs.js",
@@ -86,6 +87,5 @@
   },
   "dependencies": {
     "bignumber.js": "^9.0.2"
-  },
-  "version": "0.0.27"
+  }
 }
