@@ -23,6 +23,7 @@ import PROJECT_HANDLER_ABI from "../../assets/abi/project_handler.json";
 import CARD_HANDLER_ABI from "../../assets/abi/card_handler.json";
 import FACTORY_ABI from "../../assets/abi/pancakeswap_factory_abi.json";
 import FARM_ABI from "../../assets/abi/farm.json";
+import POOL_CARDS_ABI from "../../assets/abi/pool_cards_abi.json";
 import {
     LPAndPriceDetails,
     LPDetails,
@@ -59,7 +60,13 @@ const fetchPools = async (
         PROJECT_HANDLER_ABI,
         ethersProvider
     );
+    const poolCards = new Contract(
+        POOL_CARDS_ADDRESS,
+        POOL_CARDS_ABI,
+        ethersProvider
+    );
     const _project = await projectHandler.getProjectInfo(PROJECT_ID);
+    const multiplierCards = await poolCards.getMultiplierCards();
     const project: Project = {
         projectId: projectId,
         admin: _project.admin,
@@ -88,6 +95,9 @@ const fetchPools = async (
                 withdrawlFeeReliefInterval: e.withdrawlFeeReliefInterval,
                 requiredCards: [],
                 rewardInfo: [],
+                multiplierCards: multiplierCards.map((i: any) =>
+                    toBigNumber(i).toNumber()
+                ),
             };
         }),
     };

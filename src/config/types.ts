@@ -62,6 +62,7 @@ export interface Pool {
             details: TokenAndLPDetails;
         };
     };
+    multiplierCards?: number[];
 }
 
 export interface RewardInfo {
