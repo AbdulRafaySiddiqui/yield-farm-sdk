@@ -188,9 +188,12 @@ export const usePool = (
     const withdraw = useWithdraw();
     const harvest = useHarvest();
     const stakeTokenApproval = useERC20Approval(
-        pool?.stakedToken,
+        pool?.stakedTokenStandard === TokenStandard.ERC20
+            ? pool?.stakedToken
+            : undefined,
         FARM_ADDRESS
     );
+
     const farmApproval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
     const cardsHandlerApproval = useERC1155Approval(
         POOL_CARDS_ADDRESS,
@@ -336,12 +339,21 @@ export const usePool = (
                 };
             }),
             loading,
-            stakedTokenApproval: {
-                isApproved:
-                    stakeTokenApproval.isApproved || pool.stakeTokenApproved,
-                approve: stakeTokenApproval.approve,
-                approvePending: stakeTokenApproval.txPending,
-            },
+            stakedTokenApproval:
+                pool?.stakedTokenStandard === TokenStandard.ERC20
+                    ? {
+                          isApproved:
+                              stakeTokenApproval.isApproved ||
+                              pool.stakeTokenApproved,
+                          approve: stakeTokenApproval.approve,
+                          approvePending: stakeTokenApproval.txPending,
+                      }
+                    : {
+                          isApproved:
+                              farmApproval.isApproved || pool.farmApproved,
+                          approve: farmApproval.approve,
+                          approvePending: farmApproval.txPending,
+                      },
             farmApproval: {
                 isApproved: farmApproval.isApproved || pool.farmApproved,
                 approve: farmApproval.approve,
