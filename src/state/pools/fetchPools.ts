@@ -9,13 +9,10 @@ import {
     ZERO_ADDRESS,
 } from "@react-dapp/utils";
 import {
-    CARD_HANDLER_ADDRESS,
     ETH_USD_PAIR,
     EXCHANGE_FACTORY_ADDRESS,
-    FARM_ADDRESS,
     LP_NAME,
     POOL_CARDS_ADDRESS,
-    PROJECT_HANDLER_ADDRESS,
     PROJECT_ID,
     WRAPPED_NATIVE,
 } from "../../config";
@@ -48,7 +45,10 @@ import { Contract, providers } from "ethers";
 const fetchPools = async (
     ethersProvider: providers.Provider,
     projectId: number,
-    account: string
+    account: string,
+    farmAddress: string,
+    projectHandlerAddress: string,
+    cardHandlerAddress: string
 ) => {
     if (!ethersProvider || !account) return;
 
@@ -56,7 +56,7 @@ const fetchPools = async (
         await getLPInfo(ethersProvider, [ETH_USD_PAIR])
     )[0].token0.price;
     const projectHandler = new Contract(
-        PROJECT_HANDLER_ADDRESS,
+        projectHandlerAddress,
         PROJECT_HANDLER_ABI,
         ethersProvider
     );
@@ -112,7 +112,7 @@ const fetchPools = async (
         const e = project.pools[i];
         poolCallContext.push({
             reference: `rewardInfo-${e.poolId}`,
-            contractAddress: PROJECT_HANDLER_ADDRESS,
+            contractAddress: projectHandlerAddress,
             abi: PROJECT_HANDLER_ABI,
             calls: [
                 {
@@ -124,7 +124,7 @@ const fetchPools = async (
         });
         poolCallContext.push({
             reference: `requiredCards-${e.poolId}`,
-            contractAddress: CARD_HANDLER_ADDRESS,
+            contractAddress: cardHandlerAddress,
             abi: CARD_HANDLER_ABI,
             calls: [
                 {
@@ -136,7 +136,7 @@ const fetchPools = async (
         });
         poolCallContext.push({
             reference: `pendingRewards-${e.poolId}`,
-            contractAddress: FARM_ADDRESS,
+            contractAddress: farmAddress,
             abi: FARM_ABI,
             calls: [
                 {
@@ -148,7 +148,7 @@ const fetchPools = async (
         });
         poolCallContext.push({
             reference: `userInfo-${e.poolId}`,
-            contractAddress: FARM_ADDRESS,
+            contractAddress: farmAddress,
             abi: FARM_ABI,
             calls: [
                 {
@@ -175,7 +175,7 @@ const fetchPools = async (
                             e.stakedTokenStandard === TokenStandard.ERC20
                                 ? "allowance"
                                 : "isApprovedForAll",
-                        methodParameters: [account, FARM_ADDRESS],
+                        methodParameters: [account, farmAddress],
                     },
                 ],
             });
@@ -188,7 +188,7 @@ const fetchPools = async (
                 {
                     reference: "poolCardsApproval",
                     methodName: "isApprovedForAll",
-                    methodParameters: [account, FARM_ADDRESS],
+                    methodParameters: [account, farmAddress],
                 },
             ],
         });
@@ -200,13 +200,13 @@ const fetchPools = async (
                 {
                     reference: "poolCardsCardHandlerApproval",
                     methodName: "isApprovedForAll",
-                    methodParameters: [account, CARD_HANDLER_ADDRESS],
+                    methodParameters: [account, cardHandlerAddress],
                 },
             ],
         });
         poolCallContext.push({
             reference: `getUserCardsInfo-${e.poolId}`,
-            contractAddress: CARD_HANDLER_ADDRESS,
+            contractAddress: cardHandlerAddress,
             abi: CARD_HANDLER_ABI,
             calls: [
                 {

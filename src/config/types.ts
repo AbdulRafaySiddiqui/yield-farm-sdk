@@ -175,8 +175,10 @@ export interface TokenAndLPDetails extends Token {
 }
 
 export interface PoolState {
-    loading: boolean;
-    data: Pool[];
+    loadingV1: boolean;
+    loadingV2: boolean;
+    farmDataV1: Pool[];
+    farmDataV2: Pool[];
 }
 
 export interface State {
