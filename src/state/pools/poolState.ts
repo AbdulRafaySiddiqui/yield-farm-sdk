@@ -19,7 +19,7 @@ const initialState: PoolState = {
 };
 
 export const loadV1Pools = createAsyncThunk(
-    "pools/loadPools",
+    "pools/loadPoolsV1",
     async (
         payload: {
             ethersProvider: Provider;
@@ -46,7 +46,7 @@ export const loadV1Pools = createAsyncThunk(
 );
 
 export const loadV2Pools = createAsyncThunk(
-    "pools/loadPools",
+    "pools/loadPoolsV2",
     async (
         payload: {
             ethersProvider: Provider;
