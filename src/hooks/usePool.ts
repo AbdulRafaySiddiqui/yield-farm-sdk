@@ -566,7 +566,7 @@ export const usePoolV2 = (
         if (
             pool?.stakedTokenStandard === TokenStandard.ERC20
                 ? !stakeTokenApproval.isApproved && !pool?.farmApproved
-                : cardsHandlerApproval.isApproved || !pool?.cardHandlerApproved
+                : !cardsHandlerApproval.isApproved && !pool?.cardHandlerApproved
         ) {
             handleError("Please approved your NFT before using this pool");
             return;
