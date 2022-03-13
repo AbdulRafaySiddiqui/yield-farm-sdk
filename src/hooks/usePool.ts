@@ -563,7 +563,11 @@ export const usePoolV2 = (
         multiplierCards: NftDeposit[] = [],
         referrer: string = ZERO_ADDRESS
     ) => {
-        if (!stakeTokenApproval.isApproved && !pool?.farmApproved) {
+        if (
+            pool?.stakedTokenStandard === TokenStandard.ERC20
+                ? !stakeTokenApproval.isApproved && !pool?.farmApproved
+                : cardsHandlerApproval.isApproved || !pool?.cardHandlerApproved
+        ) {
             handleError("Please approved your NFT before using this pool");
             return;
         }
