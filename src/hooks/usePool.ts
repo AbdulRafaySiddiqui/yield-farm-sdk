@@ -229,7 +229,7 @@ export const usePool = (
             projectId: PROJECT_ID,
             poolId,
             amount:
-                pool?.stakedTokenStandard === TokenStandard.NONE
+                pool?.stakedTokenStandard !== TokenStandard.ERC20
                     ? "1" // temp fix
                     : depositAmount.getValue(),
             depositFeeCards,
@@ -256,7 +256,7 @@ export const usePool = (
             projectId: PROJECT_ID,
             poolId: poolId,
             amount:
-                pool?.stakedTokenStandard === TokenStandard.NONE
+                pool?.stakedTokenStandard !== TokenStandard.ERC20
                     ? "1" // temp fix
                     : withdrawAmount.getValue(),
         });
