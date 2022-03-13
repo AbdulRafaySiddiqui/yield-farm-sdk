@@ -30,13 +30,18 @@ export const loadV1Pools = createAsyncThunk(
     ) => {
         try {
             const { ethersProvider, projectId, account } = payload;
+            console.log(
+                FARM_ADDRESS_V1,
+                CARD_HANDLER_ADDRESS_V1,
+                PROJECT_HANDLER_ADDRESS_V1
+            );
             const _pools = await fetchPools(
                 ethersProvider,
                 projectId,
                 account,
                 FARM_ADDRESS_V1,
-                CARD_HANDLER_ADDRESS_V1,
-                PROJECT_HANDLER_ADDRESS_V1
+                PROJECT_HANDLER_ADDRESS_V1,
+                CARD_HANDLER_ADDRESS_V1
             );
             return _pools;
         } catch (e) {

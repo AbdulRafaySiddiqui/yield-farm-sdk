@@ -7,17 +7,10 @@ import {
     useEthers,
     UtilsProvider,
 } from "@react-dapp/utils";
-import {
-    useAddPool,
-    useDeposit,
-    useHarvest,
-    usePool,
-    useSetPool,
-    useWithdraw,
-} from "../src/hooks/usePool";
+import { usePoolV1, usePoolV2 } from "../src/hooks/usePool";
 import BigNumber from "bignumber.js";
 import { Pool } from "../src/config/types";
-import { usePools } from "../src/state/hooks";
+import { usePoolsV1, usePoolsV2 } from "../src/state/hooks";
 import { Provider } from "react-redux";
 import store from "../src/state/store";
 import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from "../src/config";
@@ -55,8 +48,10 @@ const App = () => {
     // const project = useProject(0)
     // const addPool = useAddPool()
     // const setPool = useSetPool()
-    usePools();
-    const pool = usePool(3);
+    usePoolsV1();
+    usePoolsV2();
+    const pool1 = usePoolV1(0);
+    const pool = usePoolV2(0);
     // const depositHook = useDeposit()
     // const harvestHook = useHarvest()
     // const withdrawHook = useWithdraw()
@@ -64,6 +59,7 @@ const App = () => {
     // const erc20Approval = useERC20Approval(pools[0]?.stakedToken, FARM_ADDRESS);
     // const erc1155Approval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
 
+    console.log(pool1);
     console.log(pool);
 
     const poolData: Pool = {

@@ -527,7 +527,7 @@ export const usePoolV2 = (
     handleError: (message: string) => void = (message) => console.log(message)
 ) => {
     const pool = useSelector<State, Pool | undefined>((state) =>
-        state.pools.farmDataV1?.find((e) => e.poolId === poolId)
+        state.pools.farmDataV2?.find((e) => e.poolId === poolId)
     );
     const { load, loading } = useLoadPoolsV2();
 
