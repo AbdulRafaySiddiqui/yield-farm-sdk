@@ -321,25 +321,28 @@ const fetchPools = async (
         const shifted = responseForGetUserCardsInfo.callsReturnContext.shift();
 
         const returnValues = shifted?.returnValues;
-        console.log("return shifted", returnValues);
 
         const [required, feeDiscount, harvest, multiplier] = returnValues || [];
 
         const reformatCards = (cards: any) => {
-            cards = cards.map((item: any) => ({
+            const formatedCards: NftDeposit[] = cards.map((item: any) => ({
                 tokenId: toBigNumber(item[0]).toNumber(),
                 amount: toBigNumber(item[1]).toNumber(),
             }));
             let arr: { tokenId: number; amount: number }[] = [];
-            cards.forEach((item: { tokenId: number; amount: number }) => {
-                if (arr && arr.some((i) => i.tokenId === item.tokenId)) {
-                    arr.find((i) => i.tokenId === item.tokenId).amount +=
-                        item.amount;
-                    return;
-                } else {
-                    arr.push(item);
+            formatedCards.forEach(
+                (item: { tokenId: number; amount: number }) => {
+                    if (arr && arr.some((i) => i.tokenId === item.tokenId)) {
+                        let i = arr.find(
+                            (i) => i.tokenId === item.tokenId
+                        )?.amount;
+                        i = i ?? 0 + item.amount;
+                        return;
+                    } else {
+                        arr.push(item);
+                    }
                 }
-            });
+            );
             cards = arr;
             return arr;
         };
@@ -373,35 +376,33 @@ const fetchPools = async (
         const stakeTokenDetails = tokenPrices[pool.stakedToken];
         project.pools[i].stakedTokenDetails = stakeTokenDetails?.details;
         project.pools[i].isLP = stakeTokenDetails?.isLP;
-        if (project.pools[i].stakedTokenDetails) {
-            project.pools[i].stats = {
-                price: stakeTokenDetails.details.price,
-                liquidity: stakeTokenDetails.details.price?.times(
-                    toLowerUnit(
-                        pool.stakedAmount.toFixed(),
-                        stakeTokenDetails.details.decimals
-                    )
-                ),
-                apy: pool.rewardInfo.map((e, j) => {
-                    const rewardTokenDetails = tokenPrices[e.token];
-                    project.pools[i].rewardInfo[j].details =
-                        rewardTokenDetails?.details;
-                    if (rewardTokenDetails)
-                        return getApy(
-                            stakeTokenDetails.details.price?.toFixed() ?? "0",
-                            rewardTokenDetails.details.price?.toFixed() ?? "0",
-                            toLowerUnit(
-                                pool.stakedAmount.toFixed(),
-                                stakeTokenDetails.details.decimals
-                            ).toFixed(),
-                            toLowerUnit(
-                                e.rewardPerBlock.toFixed(),
-                                rewardTokenDetails?.details.decimals
-                            ).toNumber()
-                        );
-                }),
-            };
-        }
+        project.pools[i].stats = {
+            price: stakeTokenDetails?.details?.price,
+            liquidity: stakeTokenDetails?.details?.price?.times(
+                toLowerUnit(
+                    pool.stakedAmount.toFixed(),
+                    stakeTokenDetails?.details?.decimals
+                )
+            ),
+            apy: pool.rewardInfo.map((e, j) => {
+                const rewardTokenDetails = tokenPrices[e.token];
+                project.pools[i].rewardInfo[j].details =
+                    rewardTokenDetails?.details;
+                if (rewardTokenDetails && stakeTokenDetails)
+                    return getApy(
+                        stakeTokenDetails.details.price?.toFixed() ?? "0",
+                        rewardTokenDetails.details.price?.toFixed() ?? "0",
+                        toLowerUnit(
+                            pool.stakedAmount.toFixed(),
+                            stakeTokenDetails.details.decimals
+                        ).toFixed(),
+                        toLowerUnit(
+                            e.rewardPerBlock.toFixed(),
+                            rewardTokenDetails?.details.decimals
+                        ).toNumber()
+                    );
+            }),
+        };
     }
     return project;
 };
