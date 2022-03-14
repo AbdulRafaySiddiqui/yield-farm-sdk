@@ -217,6 +217,7 @@ export const usePoolV1 = (
     );
 
     const handleDeposit = async (
+        amount: string,
         depositFeeCards: NftDeposit[] = [],
         withdrawFeeCards: NftDeposit[] = [],
         harvestCards: NftDeposit[] = [],
@@ -236,7 +237,7 @@ export const usePoolV1 = (
             projectId: PROJECT_ID,
             poolId,
             amount:
-                pool?.stakedTokenStandard === TokenStandard.ERC20
+                amount ?? pool?.stakedTokenStandard === TokenStandard.ERC20
                     ? depositAmount.getValue()
                     : pool?.stakedAmount.gt(0)
                     ? "0" // to prevent multiple require card deposit
@@ -256,7 +257,7 @@ export const usePoolV1 = (
         return response;
     };
 
-    const handleWithdraw = async () => {
+    const handleWithdraw = async (amount?: string) => {
         if (withdrawAmount.error) {
             handleError(withdrawAmount.error);
             return;
@@ -266,7 +267,7 @@ export const usePoolV1 = (
             projectId: PROJECT_ID,
             poolId: poolId,
             amount:
-                pool?.stakedTokenStandard !== TokenStandard.ERC20
+                amount ?? pool?.stakedTokenStandard !== TokenStandard.ERC20
                     ? "1" // temp fix
                     : withdrawAmount.getValue(),
         });
