@@ -7,13 +7,13 @@ import {
     useEthers,
     UtilsProvider,
 } from "@react-dapp/utils";
-import { usePoolV1, usePoolV2 } from "../src/hooks/usePool";
+import { usePoolV1, usePoolV2 } from "./hooks/usePool";
 import BigNumber from "bignumber.js";
-import { Pool } from "../src/config/types";
-import { usePoolsV1, usePoolsV2 } from "../src/state/hooks";
+import { Pool } from "./config/types";
+import { usePoolsV1, usePoolsV2 } from "./state/hooks";
 import { Provider } from "react-redux";
-import store from "../src/state/store";
-import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from "../src/config";
+import store from "./state/store";
+import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from "./config";
 
 console.warn = () => {};
 require("dotenv").config();
@@ -51,7 +51,7 @@ const App = () => {
     usePoolsV1();
     usePoolsV2();
     const pool1 = usePoolV1(0);
-    const pool = usePoolV2(0);
+    // const pool = usePoolV2(0);
     // const depositHook = useDeposit()
     // const harvestHook = useHarvest()
     // const withdrawHook = useWithdraw()
@@ -60,7 +60,7 @@ const App = () => {
     // const erc1155Approval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
 
     console.log(pool1);
-    console.log(pool);
+    // console.log(pool);
 
     const poolData: Pool = {
         projectId: 0,

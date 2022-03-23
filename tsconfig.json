@@ -21,6 +21,6 @@
         "incremental": true,
         "noFallthroughCasesInSwitch": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "test/index.ts"],
     "exclude": ["node_modules", "build", "test"]
 }

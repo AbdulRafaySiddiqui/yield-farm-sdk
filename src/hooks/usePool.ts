@@ -36,7 +36,9 @@ import {
 } from "../state/hooks";
 import {
     CARD_HANDLER_ADDRESS,
+    CARD_HANDLER_ADDRESS_V1,
     FARM_ADDRESS,
+    FARM_ADDRESS_V1,
     POOL_CARDS_ADDRESS,
     PROJECT_ID,
 } from "../config";
@@ -198,13 +200,16 @@ export const usePoolV1 = (
         pool?.stakedTokenStandard === TokenStandard.ERC20
             ? pool?.stakedToken
             : undefined,
-        FARM_ADDRESS
+        FARM_ADDRESS_V1
     );
 
-    const farmApproval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
+    const farmApproval = useERC1155Approval(
+        POOL_CARDS_ADDRESS,
+        FARM_ADDRESS_V1
+    );
     const cardsHandlerApproval = useERC1155Approval(
         POOL_CARDS_ADDRESS,
-        CARD_HANDLER_ADDRESS
+        CARD_HANDLER_ADDRESS_V1
     );
 
     const depositAmount = useInputValue(
@@ -223,10 +228,10 @@ export const usePoolV1 = (
         multiplierCards: NftDeposit[] = [],
         referrer: string = ZERO_ADDRESS
     ) => {
-        if (!stakeTokenApproval.isApproved && !pool?.farmApproved) {
-            handleError("Please approved your NFT before using this pool");
-            return;
-        }
+        // if (!stakeTokenApproval.isApproved && !pool?.farmApproved) {
+        //     handleError("Please approved your NFT before using this pool");
+        //     return;
+        // }
         if (depositAmount.error) {
             handleError(depositAmount.error);
             return;
