@@ -3,11 +3,12 @@ import BigNumber from "bignumber.js";
 import { Pool, Project } from "../config/types";
 import { useEffect, useState } from "react";
 import { useProjectHandlerContract } from "./useContracts";
+import { useProjectHandlerContractV2 } from "./useContracts";
 
 export const useProjects = () => {
     const [porjectsLength, setPorjectsLength] = useState(0);
 
-    const projectHandler = useProjectHandlerContract();
+    const projectHandler = useProjectHandlerContractV2();
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -27,7 +28,7 @@ export const useProjects = () => {
 };
 
 export const useProject = (projectId: number) => {
-    const projectHandler = useProjectHandlerContract();
+    const projectHandler = useProjectHandlerContractV2();
     const [project, setProject] = useState<Project>();
     const [loading, setLoading] = useState(false);
 
@@ -65,8 +66,7 @@ export const useProject = (projectId: number) => {
                         }) => {
                             return {
                                 projectId: projectId,
-                                stakedTokenStandard:
-                                    e.stakedTokenStandard as number,
+                                stakedTokenStandard: e.stakedTokenStandard as number,
                                 stakedTokenId: toBigNumber(e.stakedTokenId),
                                 stakedToken: e.stakedToken,
                                 rewardToken: e.rewardToken,

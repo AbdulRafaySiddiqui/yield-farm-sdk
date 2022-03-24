@@ -8,6 +8,12 @@ import {
     CARD_HANDLER_ADDRESS,
     FARM_ADDRESS,
     PROJECT_HANDLER_ADDRESS,
+    CARD_HANDLER_ADDRESS_V2,
+    CARD_HANDLER_ADDRESS_V1,
+    FARM_ADDRESS_V2,
+    FARM_ADDRESS_V1,
+    PROJECT_HANDLER_ADDRESS_V2,
+    PROJECT_HANDLER_ADDRESS_V1,
     REFERRAL_ADDRESS,
 } from "../config";
 import { useContract } from "@react-dapp/utils";
@@ -22,6 +28,30 @@ export const useProjectHandlerContract = () => {
 
 export const useCardHandlerContract = () => {
     return useContract(CARD_HANDLER_ABI, CARD_HANDLER_ADDRESS);
+};
+
+export const useNftVillageChiefContractV1 = () => {
+    return useContract(FARM_ABI, FARM_ADDRESS_V1);
+};
+
+export const useProjectHandlerContractV1 = () => {
+    return useContract(PROJECT_HANDLER_ABI, PROJECT_HANDLER_ADDRESS_V1);
+};
+
+export const useCardHandlerContractV1 = () => {
+    return useContract(CARD_HANDLER_ABI, CARD_HANDLER_ADDRESS_V1);
+};
+
+export const useNftVillageChiefContractV2 = () => {
+    return useContract(FARM_ABI, FARM_ADDRESS_V2);
+};
+
+export const useProjectHandlerContractV2 = () => {
+    return useContract(PROJECT_HANDLER_ABI, PROJECT_HANDLER_ADDRESS_V2);
+};
+
+export const useCardHandlerContractV2 = () => {
+    return useContract(CARD_HANDLER_ABI, CARD_HANDLER_ADDRESS_V2);
 };
 
 export const useReferralContract = () => {

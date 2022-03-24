@@ -62,6 +62,7 @@ export interface Pool {
             details: TokenAndLPDetails;
         };
     };
+    multiplierCards?: number[];
 }
 
 export interface RewardInfo {
@@ -114,7 +115,6 @@ export interface DepositInfo {
     withdrawFeeCards: NftDeposit[];
     harvestCards: NftDeposit[];
     multiplierCards: NftDeposit[];
-    requiredCards: NftDeposit[];
     referrer: string;
 }
 
@@ -175,8 +175,12 @@ export interface TokenAndLPDetails extends Token {
 }
 
 export interface PoolState {
+    loadingV1: boolean;
+    loadingV2: boolean;
     loading: boolean;
-    data: Pool[];
+    farmDataV1: Pool[];
+    farmDataV2: Pool[];
+    farmData: Pool[];
 }
 
 export interface State {
