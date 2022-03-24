@@ -371,23 +371,6 @@
                 "type": "tuple[]"
             },
             {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "tokenId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct BaseStructs.NftDeposit[]",
-                "name": "requireCards",
-                "type": "tuple[]"
-            },
-            {
                 "internalType": "address",
                 "name": "referrer",
                 "type": "address"

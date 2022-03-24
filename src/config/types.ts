@@ -107,7 +107,7 @@ export interface NftDepositInfo {
 }
 
 // order should be same as in contract
-export interface DepositInfo {
+export interface DepositInfoV1 {
     projectId: number;
     poolId: number;
     amount: string;
@@ -117,7 +117,9 @@ export interface DepositInfo {
     multiplierCards: NftDeposit[];
     referrer: string;
 }
-
+export interface DepositInfo extends DepositInfoV1 {
+    requiredCards: NftDeposit[];
+}
 export interface HarvestInfo {
     projectId: number;
     poolId: number;

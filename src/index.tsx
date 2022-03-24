@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { useAddPool, useDeposit, useHarvest, usePool, useSetPool, useWithdraw } from "./hooks/usePool";
 import { usePools } from "./state/hooks";
 import { toUpperUnit, useERC20Approval, useERC1155Approval, useEthers, UtilsProvider } from "@react-dapp/utils";
-import { usePoolV1, usePoolV2 } from "./hooks/usePool";
+import { usePoolV1, usePoolV2 } from "./hooks";
 import BigNumber from "bignumber.js";
 import { Pool } from "./config/types";
 import { usePoolsV1, usePoolsV2 } from "./state/hooks";
