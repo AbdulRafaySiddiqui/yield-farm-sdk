@@ -56,15 +56,16 @@ const App = () => {
     // const addPool = useAddPool()
     // const setPool = useSetPool()
     usePools();
-    const pool = usePool(0);
+    const pool0 = usePool(0);
+    const pool = usePool(7);
+    if (pool) console.log(pool0, pool);
+
     // const depositHook = useDeposit()
     // const harvestHook = useHarvest()
     // const withdrawHook = useWithdraw()
 
     // const erc20Approval = useERC20Approval(pools[0]?.stakedToken, FARM_ADDRESS);
     // const erc1155Approval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
-
-    console.log(pool);
 
     const poolData: Pool = {
         projectId: 0,
@@ -102,7 +103,10 @@ const App = () => {
             <h1>NFT Village Farm SDK</h1>
 
             {/* <h3>Project Info</h3>
-      {loading ? 'Loading project...' : print(project)} */}
+            {loading ? 'Loading project...' : print(project)} */}
+
+            <h3>Pools</h3>
+            {print(pool)}
 
             {/* <h3>Deposit Pool</h3>
       <button onClick={() => erc20Approval.approve()}>Staked Token Approved:  {pools[0]?.stakeTokenApproved}</button>
