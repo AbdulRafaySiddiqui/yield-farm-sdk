@@ -65,7 +65,8 @@
         "build": "rollup -c",
         "build-demo": "react-scripts build",
         "publish-package": "npm run build && npm version patch && npm publish",
-        "build-dev": "rollup -c rollup.dev.config.js"
+        "build-dev": "rollup -c rollup.dev.config.js",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx}\""
     },
     "eslintConfig": {
         "extends": [
