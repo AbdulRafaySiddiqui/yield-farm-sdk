@@ -6,5 +6,6 @@ export default configureStore({
     reducer: {
         pools: poolReducer,
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({ serializableCheck: false }),
 });

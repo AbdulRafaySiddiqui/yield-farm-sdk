@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Provider } from "@ethersproject/providers"
+import { Provider } from "@ethersproject/providers";
 import fetchPools from "./fetchPools";
 import { PoolState } from "../../config/types";
 
@@ -10,9 +10,16 @@ const initialState: PoolState = {
 
 export const loadPools = createAsyncThunk(
     "pools/loadPools",
-    async (payload: { ethersProvider: Provider, projectId: number, account: string }, thunkApi) => {
+    async (
+        payload: {
+            ethersProvider: Provider;
+            projectId: number;
+            account: string;
+        },
+        thunkApi
+    ) => {
         try {
-            const { ethersProvider, projectId, account } = payload
+            const { ethersProvider, projectId, account } = payload;
             const _pools = await fetchPools(ethersProvider, projectId, account);
             return _pools;
         } catch (e) {
@@ -28,14 +35,14 @@ const poolSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(loadPools.pending, (state) => {
             state.loading = true;
-        })
+        });
         builder.addCase(loadPools.rejected, (state) => {
             state.loading = false;
-        })
+        });
         builder.addCase(loadPools.fulfilled, (state, action: any) => {
             state.data = action.payload?.pools;
             state.loading = false;
-        })
+        });
     },
 });
 
