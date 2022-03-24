@@ -10,30 +10,30 @@ import sourcemaps from "rollup-plugin-sourcemaps";
 const extensions = [".ts", "tsx"];
 
 export default {
-  input: [pkg.source],
-  output: [
-    { file: pkg.main, format: "cjs", sourcemap: true },
-    { file: pkg.module, format: "es", sourcemap: true },
-  ],
-  plugins: [
-    typescript({
-      tsconfig: "./tsconfig.json",
-      outputToFilesystem: true,
-      sourceMap: true,
-      inlineSourceMap: true,
-      inlineSources: true,
-    }),
-    json(),
-    external(),
-    resolve({
-      extensions,
-    }),
-    babel({
-      exclude: "node_modules/**",
-      babelHelpers: "bundled",
-    }),
-    del({ targets: ["dist/*"] }),
-    sourcemaps(),
-  ],
-  external: [Object.keys(pkg.dependencies || {})],
+    input: [pkg.source],
+    output: [
+        { file: pkg.main, format: "cjs", sourcemap: true },
+        { file: pkg.module, format: "es", sourcemap: true },
+    ],
+    plugins: [
+        typescript({
+            tsconfig: "./tsconfig.json",
+            outputToFilesystem: true,
+            sourceMap: true,
+            inlineSourceMap: true,
+            inlineSources: true,
+        }),
+        json(),
+        external(),
+        resolve({
+            extensions,
+        }),
+        babel({
+            exclude: "node_modules/**",
+            babelHelpers: "bundled",
+        }),
+        del({ targets: ["dist/*"] }),
+        sourcemaps(),
+    ],
+    external: [Object.keys(pkg.dependencies || {})],
 };

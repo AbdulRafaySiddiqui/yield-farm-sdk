@@ -18,8 +18,7 @@ export const useLoadPoolsV1 = () => {
                     account: account,
                 })
             );
-        else
-            console.log("Cannot load pools, wallet account not connected yet!");
+        else console.log("Cannot load pools, wallet account not connected yet!");
     };
 
     return {
@@ -64,8 +63,7 @@ export const useLoadPoolsV2 = () => {
                     account: account,
                 })
             );
-        else
-            console.log("Cannot load pools, wallet account not connected yet!");
+        else console.log("Cannot load pools, wallet account not connected yet!");
     };
 
     return {

@@ -1,12 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {
-    toUpperUnit,
-    useERC20Approval,
-    useERC1155Approval,
-    useEthers,
-    UtilsProvider,
-} from "@react-dapp/utils";
+import { toUpperUnit, useERC20Approval, useERC1155Approval, useEthers, UtilsProvider } from "@react-dapp/utils";
 import { usePoolV1, usePoolV2 } from "./hooks/usePool";
 import BigNumber from "bignumber.js";
 import { Pool } from "./config/types";

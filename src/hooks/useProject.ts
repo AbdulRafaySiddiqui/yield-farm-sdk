@@ -65,8 +65,7 @@ export const useProject = (projectId: number) => {
                         }) => {
                             return {
                                 projectId: projectId,
-                                stakedTokenStandard:
-                                    e.stakedTokenStandard as number,
+                                stakedTokenStandard: e.stakedTokenStandard as number,
                                 stakedTokenId: toBigNumber(e.stakedTokenId),
                                 stakedToken: e.stakedToken,
                                 rewardToken: e.rewardToken,
