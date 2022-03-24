@@ -28,16 +28,11 @@ import {
     useProjectHandlerContractV1,
     useProjectHandlerContractV2,
 } from "./useContracts";
+import { useLoadPoolsV1, useLoadPoolsV2, usePoolsV1, usePoolsV2 } from "../state/hooks";
 import {
-    useLoadPoolsV1,
-    useLoadPoolsV2,
-    usePoolsV1,
-    usePoolsV2,
-} from "../state/hooks";
-import {
-    CARD_HANDLER_ADDRESS,
+    CARD_HANDLER_ADDRESS_V2,
     CARD_HANDLER_ADDRESS_V1,
-    FARM_ADDRESS,
+    FARM_ADDRESS_V2,
     FARM_ADDRESS_V1,
     POOL_CARDS_ADDRESS,
     PROJECT_ID,
@@ -56,13 +51,9 @@ export const useAddPool = () => {
 
             const _pool = bigNumberObjtoString(pool);
             const _poolFee = await projectHandler.poolFee();
-            await projectHandler.addPool(
-                pool.projectId,
-                _pool,
-                _pool.rewardInfo,
-                _pool.requiredCards,
-                { value: _poolFee }
-            );
+            await projectHandler.addPool(pool.projectId, _pool, _pool.rewardInfo, _pool.requiredCards, {
+                value: _poolFee,
+            });
 
             setTxState(STATE.SUCCEED);
         } catch (e) {
@@ -85,12 +76,7 @@ export const useSetPool = () => {
             setTxState(STATE.BUSY);
 
             const _pool = bigNumberObjtoString(pool);
-            await projectHandler.setPool(
-                pool.projectId,
-                pool.poolId,
-                _pool,
-                _pool.requiredCards
-            );
+            await projectHandler.setPool(pool.projectId, pool.poolId, _pool, _pool.requiredCards);
 
             setTxState(STATE.SUCCEED);
         } catch (e) {
@@ -114,45 +100,26 @@ export const useSinglePool = (projectId: number, poolId: number) => {
             if (!projectHandler || !cardHandler) return;
             setLoading(true);
             try {
-                const _pool = await projectHandler.getPoolInfo(
-                    projectId,
-                    poolId
-                );
-                const _rewardInfo = await projectHandler.getRewardInfo(
-                    projectId,
-                    poolId
-                );
-                const _requiredCards = await cardHandler.getPoolRequiredCards(
-                    projectId,
-                    poolId
-                );
+                const _pool = await projectHandler.getPoolInfo(projectId, poolId);
+                const _rewardInfo = await projectHandler.getRewardInfo(projectId, poolId);
+                const _requiredCards = await cardHandler.getPoolRequiredCards(projectId, poolId);
 
                 setPool({
                     projectId: projectId,
                     poolId: poolId,
-                    withdrawlFeeReliefInterval: toBigNumber(
-                        _pool.withdrawlFeeReliefInterval
-                    ).toNumber(),
+                    withdrawlFeeReliefInterval: toBigNumber(_pool.withdrawlFeeReliefInterval).toNumber(),
                     depositFee: toBigNumber(_pool.depositFee).toNumber(),
-                    harvestInterval: toBigNumber(
-                        _pool.harvestInterval
-                    ).toNumber(),
+                    harvestInterval: toBigNumber(_pool.harvestInterval).toNumber(),
                     lockDeposit: _pool.lockDeposit,
                     minDeposit: toBigNumber(_pool.minDeposit),
-                    maxWithdrawlFee: toBigNumber(
-                        _pool.maxWithdrawlFee
-                    ).toNumber(),
-                    minWithdrawlFee: toBigNumber(
-                        _pool.minWithdrawlFee
-                    ).toNumber(),
+                    maxWithdrawlFee: toBigNumber(_pool.maxWithdrawlFee).toNumber(),
+                    minWithdrawlFee: toBigNumber(_pool.minWithdrawlFee).toNumber(),
                     stakedToken: _pool.stakedToken,
                     stakedTokenStandard: 0,
                     stakedTokenId: toBigNumber(_pool.stakedTokenId),
                     stakedAmount: toBigNumber(_pool.stakedAmount),
                     totalShares: toBigNumber(_pool.totalShares),
-                    minRequiredCards: toBigNumber(
-                        _pool.minRequiredCards
-                    ).toNumber(),
+                    minRequiredCards: toBigNumber(_pool.minRequiredCards).toNumber(),
                     requiredCards: _requiredCards.map((e: any) => {
                         return {
                             tokenId: toBigNumber(e.tokenId),
@@ -197,29 +164,18 @@ export const usePoolV1 = (
     const withdraw = useWithdrawV1();
     const harvest = useHarvestV1();
     const stakeTokenApproval = useERC20Approval(
-        pool?.stakedTokenStandard === TokenStandard.ERC20
-            ? pool?.stakedToken
-            : undefined,
+        pool?.stakedTokenStandard === TokenStandard.ERC20 ? pool?.stakedToken : undefined,
         FARM_ADDRESS_V1
     );
 
-    const farmApproval = useERC1155Approval(
-        POOL_CARDS_ADDRESS,
-        FARM_ADDRESS_V1
-    );
-    const cardsHandlerApproval = useERC1155Approval(
-        POOL_CARDS_ADDRESS,
-        CARD_HANDLER_ADDRESS_V1
-    );
+    const farmApproval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS_V1);
+    const cardsHandlerApproval = useERC1155Approval(POOL_CARDS_ADDRESS, CARD_HANDLER_ADDRESS_V1);
 
     const depositAmount = useInputValue(
         pool?.stakedTokenDetails?.balance?.toFixed() ?? "0",
         pool?.stakedTokenDetails?.decimals
     );
-    const withdrawAmount = useInputValue(
-        pool?.userInfo?.amount?.toFixed() ?? "0",
-        pool?.stakedTokenDetails?.decimals
-    );
+    const withdrawAmount = useInputValue(pool?.userInfo?.amount?.toFixed() ?? "0", pool?.stakedTokenDetails?.decimals);
 
     const handleDeposit = async (
         depositFeeCards: NftDeposit[] = [],
@@ -324,48 +280,34 @@ export const usePoolV1 = (
     return (
         pool && {
             liquidity: pool.stats?.liquidity?.toFormat(0),
-            totalStaked: toLowerUnit(
-                pool.stakedAmount.toFixed(),
-                pool.stakedTokenDetails?.decimals
-            ).toFormat(2),
+            totalStaked: toLowerUnit(pool.stakedAmount.toFixed(), pool.stakedTokenDetails?.decimals).toFormat(2),
             stakedAmount: toLowerUnit(
                 pool.userInfo?.amount?.toFixed() ?? "0",
                 pool.stakedTokenDetails?.decimals
             ).toFormat(2),
             stakedTokenSymbol: pool.stakedTokenDetails?.symbol,
             stakedTokenBalance: toLowerUnit(
-                toBigNumber(
-                    pool.stakedTokenDetails?.balance.toFixed() ?? 0
-                ).toString() ?? "0",
+                toBigNumber(pool.stakedTokenDetails?.balance.toFixed() ?? 0).toString() ?? "0",
                 pool.stakedTokenDetails?.decimals
             ).toFormat(2),
-            poolSharePercent: pool.userInfo?.amount
-                .div(pool.stakedAmount)
-                .times(100)
-                .toFixed(2),
+            poolSharePercent: pool.userInfo?.amount.div(pool.stakedAmount).times(100).toFixed(2),
             rewards: pool.rewardInfo.map((e, i) => {
                 return {
                     apy: pool.stats?.apy[i]?.toFixed(0),
                     rewardTokenSymbol: e.details?.symbol,
-                    rewards: toLowerUnit(
-                        e.rewards.toFixed(),
-                        e.details?.decimals
-                    ).toFormat(4),
+                    rewards: toLowerUnit(e.rewards.toFixed(), e.details?.decimals).toFormat(4),
                 };
             }),
             loading,
             stakedTokenApproval:
                 pool?.stakedTokenStandard === TokenStandard.ERC20
                     ? {
-                          isApproved:
-                              stakeTokenApproval.isApproved ||
-                              pool.stakeTokenApproved,
+                          isApproved: stakeTokenApproval.isApproved || pool.stakeTokenApproved,
                           approve: stakeTokenApproval.approve,
                           approvePending: stakeTokenApproval.txPending,
                       }
                     : {
-                          isApproved:
-                              farmApproval.isApproved || pool.farmApproved,
+                          isApproved: farmApproval.isApproved || pool.farmApproved,
                           approve: farmApproval.approve,
                           approvePending: farmApproval.txPending,
                       },
@@ -375,8 +317,7 @@ export const usePoolV1 = (
                 approvePending: farmApproval.txPending,
             },
             cardHandlerApproval: {
-                isApproved:
-                    cardsHandlerApproval.isApproved || pool.cardHandlerApproved,
+                isApproved: cardsHandlerApproval.isApproved || pool.cardHandlerApproved,
                 approve: cardsHandlerApproval.approve,
                 approvePending: cardsHandlerApproval.txPending,
             },
@@ -415,9 +356,7 @@ export const useDepositV1 = () => {
             };
 
         setTxPending(true);
-        const response = await awaitTransaction(
-            chief.deposit(...bigNumberObjtoString(Object.values(stakeInfo)))
-        );
+        const response = await awaitTransaction(chief.deposit(...bigNumberObjtoString(Object.values(stakeInfo))));
         setTxPending(false);
 
         return response;
@@ -440,17 +379,13 @@ export const useWithdrawV1 = () => {
             };
 
         setTxPending(true);
-        const response = await awaitTransaction(
-            chief.withdraw(...Object.values(withdrawInfo))
-        );
+        const response = await awaitTransaction(chief.withdraw(...Object.values(withdrawInfo)));
         setTxPending(false);
 
         return response;
     };
 
-    const withdrawMultiplierCards = async (
-        info: WithdrawMultiplierCardsInfo
-    ) => {
+    const withdrawMultiplierCards = async (info: WithdrawMultiplierCardsInfo) => {
         if (!chief)
             return {
                 tx: undefined,
@@ -460,9 +395,7 @@ export const useWithdrawV1 = () => {
             };
 
         setTxPending(true);
-        const response = await awaitTransaction(
-            chief.withdrawMultiplierCard(...Object.values(info))
-        );
+        const response = await awaitTransaction(chief.withdrawMultiplierCard(...Object.values(info)));
         setTxPending(false);
 
         return response;
@@ -477,9 +410,7 @@ export const useWithdrawV1 = () => {
             };
 
         setTxPending(true);
-        const response = await awaitTransaction(
-            chief.withdrawHarvestCard(...Object.values(info))
-        );
+        const response = await awaitTransaction(chief.withdrawHarvestCard(...Object.values(info)));
         setTxPending(false);
 
         return response;
@@ -540,26 +471,18 @@ export const usePoolV2 = (
     const withdraw = useWithdrawV2();
     const harvest = useHarvestV2();
     const stakeTokenApproval = useERC20Approval(
-        pool?.stakedTokenStandard === TokenStandard.ERC20
-            ? pool?.stakedToken
-            : undefined,
-        FARM_ADDRESS
+        pool?.stakedTokenStandard === TokenStandard.ERC20 ? pool?.stakedToken : undefined,
+        FARM_ADDRESS_V2
     );
 
-    const farmApproval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
-    const cardsHandlerApproval = useERC1155Approval(
-        POOL_CARDS_ADDRESS,
-        CARD_HANDLER_ADDRESS
-    );
+    const farmApproval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS_V2);
+    const cardsHandlerApproval = useERC1155Approval(POOL_CARDS_ADDRESS, CARD_HANDLER_ADDRESS_V2);
 
     const depositAmount = useInputValue(
         pool?.stakedTokenDetails?.balance?.toFixed() ?? "0",
         pool?.stakedTokenDetails?.decimals
     );
-    const withdrawAmount = useInputValue(
-        pool?.userInfo?.amount?.toFixed() ?? "0",
-        pool?.stakedTokenDetails?.decimals
-    );
+    const withdrawAmount = useInputValue(pool?.userInfo?.amount?.toFixed() ?? "0", pool?.stakedTokenDetails?.decimals);
 
     const handleDeposit = async (
         depositFeeCards: NftDeposit[] = [],
@@ -669,48 +592,34 @@ export const usePoolV2 = (
     return (
         pool && {
             liquidity: pool.stats?.liquidity?.toFormat(0),
-            totalStaked: toLowerUnit(
-                pool.stakedAmount.toFixed(),
-                pool.stakedTokenDetails?.decimals
-            ).toFormat(2),
+            totalStaked: toLowerUnit(pool.stakedAmount.toFixed(), pool.stakedTokenDetails?.decimals).toFormat(2),
             stakedAmount: toLowerUnit(
                 pool.userInfo?.amount?.toFixed() ?? "0",
                 pool.stakedTokenDetails?.decimals
             ).toFormat(2),
             stakedTokenSymbol: pool.stakedTokenDetails?.symbol,
             stakedTokenBalance: toLowerUnit(
-                toBigNumber(
-                    pool.stakedTokenDetails?.balance.toFixed() ?? 0
-                ).toString() ?? "0",
+                toBigNumber(pool.stakedTokenDetails?.balance.toFixed() ?? 0).toString() ?? "0",
                 pool.stakedTokenDetails?.decimals
             ).toFormat(2),
-            poolSharePercent: pool.userInfo?.amount
-                .div(pool.stakedAmount)
-                .times(100)
-                .toFixed(2),
+            poolSharePercent: pool.userInfo?.amount.div(pool.stakedAmount).times(100).toFixed(2),
             rewards: pool.rewardInfo.map((e, i) => {
                 return {
                     apy: pool.stats?.apy[i]?.toFixed(0),
                     rewardTokenSymbol: e.details?.symbol,
-                    rewards: toLowerUnit(
-                        e.rewards.toFixed(),
-                        e.details?.decimals
-                    ).toFormat(4),
+                    rewards: toLowerUnit(e.rewards.toFixed(), e.details?.decimals).toFormat(4),
                 };
             }),
             loading,
             stakedTokenApproval:
                 pool?.stakedTokenStandard === TokenStandard.ERC20
                     ? {
-                          isApproved:
-                              stakeTokenApproval.isApproved ||
-                              pool.stakeTokenApproved,
+                          isApproved: stakeTokenApproval.isApproved || pool.stakeTokenApproved,
                           approve: stakeTokenApproval.approve,
                           approvePending: stakeTokenApproval.txPending,
                       }
                     : {
-                          isApproved:
-                              farmApproval.isApproved || pool.farmApproved,
+                          isApproved: farmApproval.isApproved || pool.farmApproved,
                           approve: farmApproval.approve,
                           approvePending: farmApproval.txPending,
                       },
@@ -720,8 +629,7 @@ export const usePoolV2 = (
                 approvePending: farmApproval.txPending,
             },
             cardHandlerApproval: {
-                isApproved:
-                    cardsHandlerApproval.isApproved || pool.cardHandlerApproved,
+                isApproved: cardsHandlerApproval.isApproved || pool.cardHandlerApproved,
                 approve: cardsHandlerApproval.approve,
                 approvePending: cardsHandlerApproval.txPending,
             },
@@ -760,9 +668,7 @@ export const useDepositV2 = () => {
             };
 
         setTxPending(true);
-        const response = await awaitTransaction(
-            chief.deposit(...bigNumberObjtoString(Object.values(stakeInfo)))
-        );
+        const response = await awaitTransaction(chief.deposit(...bigNumberObjtoString(Object.values(stakeInfo))));
         setTxPending(false);
 
         return response;
@@ -785,17 +691,13 @@ export const useWithdrawV2 = () => {
             };
 
         setTxPending(true);
-        const response = await awaitTransaction(
-            chief.withdraw(...Object.values(withdrawInfo))
-        );
+        const response = await awaitTransaction(chief.withdraw(...Object.values(withdrawInfo)));
         setTxPending(false);
 
         return response;
     };
 
-    const withdrawMultiplierCards = async (
-        info: WithdrawMultiplierCardsInfo
-    ) => {
+    const withdrawMultiplierCards = async (info: WithdrawMultiplierCardsInfo) => {
         if (!chief)
             return {
                 tx: undefined,
@@ -805,9 +707,7 @@ export const useWithdrawV2 = () => {
             };
 
         setTxPending(true);
-        const response = await awaitTransaction(
-            chief.withdrawMultiplierCard(...Object.values(info))
-        );
+        const response = await awaitTransaction(chief.withdrawMultiplierCard(...Object.values(info)));
         setTxPending(false);
 
         return response;
@@ -822,9 +722,7 @@ export const useWithdrawV2 = () => {
             };
 
         setTxPending(true);
-        const response = await awaitTransaction(
-            chief.withdrawHarvestCard(...Object.values(info))
-        );
+        const response = await awaitTransaction(chief.withdrawHarvestCard(...Object.values(info)));
         setTxPending(false);
 
         return response;

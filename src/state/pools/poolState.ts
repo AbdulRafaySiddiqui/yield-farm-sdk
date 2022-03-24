@@ -3,11 +3,11 @@ import { Provider } from "@ethersproject/providers";
 import fetchPools from "./fetchPools";
 import { PoolState } from "../../config/types";
 import {
-    CARD_HANDLER_ADDRESS,
+    CARD_HANDLER_ADDRESS_V2,
     CARD_HANDLER_ADDRESS_V1,
-    FARM_ADDRESS,
+    FARM_ADDRESS_V2,
     FARM_ADDRESS_V1,
-    PROJECT_HANDLER_ADDRESS,
+    PROJECT_HANDLER_ADDRESS_V2,
     PROJECT_HANDLER_ADDRESS_V1,
 } from "../../config";
 
@@ -30,11 +30,7 @@ export const loadV1Pools = createAsyncThunk(
     ) => {
         try {
             const { ethersProvider, projectId, account } = payload;
-            console.log(
-                FARM_ADDRESS_V1,
-                CARD_HANDLER_ADDRESS_V1,
-                PROJECT_HANDLER_ADDRESS_V1
-            );
+            console.log(FARM_ADDRESS_V1, CARD_HANDLER_ADDRESS_V1, PROJECT_HANDLER_ADDRESS_V1);
             const _pools = await fetchPools(
                 ethersProvider,
                 projectId,
@@ -66,9 +62,9 @@ export const loadV2Pools = createAsyncThunk(
                 ethersProvider,
                 projectId,
                 account,
-                FARM_ADDRESS,
-                PROJECT_HANDLER_ADDRESS,
-                CARD_HANDLER_ADDRESS
+                FARM_ADDRESS_V2,
+                PROJECT_HANDLER_ADDRESS_V2,
+                CARD_HANDLER_ADDRESS_V2
             );
             return _pools;
         } catch (e) {
