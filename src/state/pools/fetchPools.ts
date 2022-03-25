@@ -16,10 +16,8 @@ import {
     PROJECT_ID,
     WRAPPED_NATIVE,
 } from "../../config";
-import PROJECT_HANDLER_ABI from "../../assets/abi/project_handler.json";
-import CARD_HANDLER_ABI from "../../assets/abi/card_handler.json";
+
 import FACTORY_ABI from "../../assets/abi/pancakeswap_factory_abi.json";
-import FARM_ABI from "../../assets/abi/farm.json";
 import POOL_CARDS_ABI from "../../assets/abi/pool_cards_abi.json";
 import {
     LPAndPriceDetails,
@@ -43,13 +41,17 @@ const fetchPools = async (
     projectId: number,
     account: string,
     farmAddress: string,
+    farmAbi: any,
     projectHandlerAddress: string,
-    cardHandlerAddress: string
+    projectHandlerAbi: any,
+    cardHandlerAddress: string,
+    cardHandlerAbi: any
 ) => {
     if (!ethersProvider || !account) return;
 
+    console.log("projectHandlerAddress", PROJECT_ID, projectHandlerAddress);
     const EthPriceInBUSD = Object.values(await getLPInfo(ethersProvider, [ETH_USD_PAIR]))[0].token0.price;
-    const projectHandler = new Contract(projectHandlerAddress, PROJECT_HANDLER_ABI, ethersProvider);
+    const projectHandler = new Contract(projectHandlerAddress, projectHandlerAbi, ethersProvider);
     const poolCards = new Contract(POOL_CARDS_ADDRESS, POOL_CARDS_ABI, ethersProvider);
     const _project = await projectHandler.getProjectInfo(PROJECT_ID);
     const multiplierCards = await poolCards.getMultiplierCards();
@@ -77,7 +79,7 @@ const fetchPools = async (
                 minWithdrawlFee: toBigNumber(e.minWithdrawlFee).toNumber(),
                 maxWithdrawlFee: toBigNumber(e.maxWithdrawlFee).toNumber(),
                 totalShares: toBigNumber(e.totalShares),
-                minRequiredCards: toBigNumber(e.minRequiredCards).toNumber(),
+                minRequiredCards: toBigNumber(e.minRequiredCards ?? 0).toNumber(),
                 withdrawlFeeReliefInterval: e.withdrawlFeeReliefInterval,
                 requiredCards: [],
                 rewardInfo: [],
@@ -97,7 +99,7 @@ const fetchPools = async (
         poolCallContext.push({
             reference: `rewardInfo-${e.poolId}`,
             contractAddress: projectHandlerAddress,
-            abi: PROJECT_HANDLER_ABI,
+            abi: projectHandlerAbi,
             calls: [
                 {
                     reference: "getRewardInfo",
@@ -109,7 +111,7 @@ const fetchPools = async (
         poolCallContext.push({
             reference: `requiredCards-${e.poolId}`,
             contractAddress: cardHandlerAddress,
-            abi: CARD_HANDLER_ABI,
+            abi: cardHandlerAbi,
             calls: [
                 {
                     reference: "getPoolRequiredCards",
@@ -121,7 +123,7 @@ const fetchPools = async (
         poolCallContext.push({
             reference: `pendingRewards-${e.poolId}`,
             contractAddress: farmAddress,
-            abi: FARM_ABI,
+            abi: farmAbi,
             calls: [
                 {
                     reference: "pendingRewards",
@@ -133,7 +135,7 @@ const fetchPools = async (
         poolCallContext.push({
             reference: `userInfo-${e.poolId}`,
             contractAddress: farmAddress,
-            abi: FARM_ABI,
+            abi: farmAbi,
             calls: [
                 {
                     reference: "userInfo",
@@ -188,7 +190,7 @@ const fetchPools = async (
         poolCallContext.push({
             reference: `getUserCardsInfo-${e.poolId}`,
             contractAddress: cardHandlerAddress,
-            abi: CARD_HANDLER_ABI,
+            abi: cardHandlerAbi,
             calls: [
                 {
                     reference: "getUserCardsInfo",

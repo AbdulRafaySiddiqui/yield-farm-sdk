@@ -23,6 +23,6 @@ export const FARM_ADDRESS_V1 = process.env.REACT_APP_FARM_ADDRESS_V1 as string;
 export const PROJECT_HANDLER_ADDRESS_V1 = process.env.REACT_APP_PROJECT_HANDLER_V1 as string;
 export const CARD_HANDLER_ADDRESS_V1 = process.env.REACT_APP_CARD_HANDLER_V1 as string;
 
-export const FARM_ADDRESS_V2 = process.env.REACT_APP_FARM_ADDRESS as string;
-export const PROJECT_HANDLER_ADDRESS_V2 = process.env.REACT_APP_PROJECT_HANDLER as string;
-export const CARD_HANDLER_ADDRESS_V2 = process.env.REACT_APP_CARD_HANDLER as string;
+export const FARM_ADDRESS_V2 = process.env.REACT_APP_FARM_ADDRESS_V2 as string;
+export const PROJECT_HANDLER_ADDRESS_V2 = process.env.REACT_APP_PROJECT_HANDLER_V2 as string;
+export const CARD_HANDLER_ADDRESS_V2 = process.env.REACT_APP_CARD_HANDLER_V2 as string;

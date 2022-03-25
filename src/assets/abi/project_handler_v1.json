@@ -1,46 +1,14 @@
 [
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "_elvantisSpaceMoon",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_owner",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_projectFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_poolFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_rewardFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "_projectFeeReceiver",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_poolFeeReceiver",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_rewardFeeReceiver",
-                "type": "address"
-            }
+            { "internalType": "address", "name": "_elvantisSpaceMoon", "type": "address" },
+            { "internalType": "address", "name": "_owner", "type": "address" },
+            { "internalType": "uint256", "name": "_projectFee", "type": "uint256" },
+            { "internalType": "uint256", "name": "_poolFee", "type": "uint256" },
+            { "internalType": "uint256", "name": "_rewardFee", "type": "uint256" },
+            { "internalType": "address", "name": "_projectFeeReceiver", "type": "address" },
+            { "internalType": "address", "name": "_poolFeeReceiver", "type": "address" },
+            { "internalType": "address", "name": "_rewardFeeReceiver", "type": "address" }
         ],
         "stateMutability": "nonpayable",
         "type": "constructor"
@@ -48,18 +16,8 @@
     {
         "anonymous": false,
         "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "oldHandler",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "newHandler",
-                "type": "address"
-            }
+            { "indexed": true, "internalType": "address", "name": "oldHandler", "type": "address" },
+            { "indexed": true, "internalType": "address", "name": "newHandler", "type": "address" }
         ],
         "name": "CardHandlerUpdate",
         "type": "event"
@@ -67,18 +25,8 @@
     {
         "anonymous": false,
         "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "previousOwner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
+            { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+            { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
         ],
         "name": "OwnershipTransferred",
         "type": "event"
@@ -86,18 +34,8 @@
     {
         "anonymous": false,
         "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "fee",
-                "type": "uint256"
-            }
+            { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" },
+            { "indexed": true, "internalType": "uint256", "name": "fee", "type": "uint256" }
         ],
         "name": "PoolFeeAndRecipientUpdated",
         "type": "event"
@@ -105,18 +43,8 @@
     {
         "anonymous": false,
         "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "fee",
-                "type": "uint256"
-            }
+            { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" },
+            { "indexed": true, "internalType": "uint256", "name": "fee", "type": "uint256" }
         ],
         "name": "ProjectFeeAndRecipientUpdated",
         "type": "event"
@@ -124,18 +52,8 @@
     {
         "anonymous": false,
         "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "fee",
-                "type": "uint256"
-            }
+            { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" },
+            { "indexed": true, "internalType": "uint256", "name": "fee", "type": "uint256" }
         ],
         "name": "RewardFeeAndRecipientUpdated",
         "type": "event"
@@ -143,85 +61,27 @@
     {
         "inputs": [],
         "name": "FEE_DENOMINATOR",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
             {
                 "components": [
-                    {
-                        "internalType": "address",
-                        "name": "stakedToken",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "lockDeposit",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "stakedTokenStandard",
-                        "type": "uint8"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "stakedTokenId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "stakedAmount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "totalShares",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "depositFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "minWithdrawlFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "maxWithdrawlFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "withdrawlFeeReliefInterval",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "minDeposit",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "harvestInterval",
-                        "type": "uint256"
-                    }
+                    { "internalType": "address", "name": "stakedToken", "type": "address" },
+                    { "internalType": "bool", "name": "lockDeposit", "type": "bool" },
+                    { "internalType": "uint8", "name": "stakedTokenStandard", "type": "uint8" },
+                    { "internalType": "uint256", "name": "stakedTokenId", "type": "uint256" },
+                    { "internalType": "uint256", "name": "stakedAmount", "type": "uint256" },
+                    { "internalType": "uint256", "name": "totalShares", "type": "uint256" },
+                    { "internalType": "uint16", "name": "depositFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "minWithdrawlFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "maxWithdrawlFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "withdrawlFeeReliefInterval", "type": "uint16" },
+                    { "internalType": "uint256", "name": "minDeposit", "type": "uint256" },
+                    { "internalType": "uint256", "name": "harvestInterval", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.PoolInfo",
                 "name": "_pool",
@@ -229,41 +89,13 @@
             },
             {
                 "components": [
-                    {
-                        "internalType": "contract IERC20Mintable",
-                        "name": "token",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "paused",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "mintable",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "rewardPerBlock",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "lastRewardBlock",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "accRewardPerShare",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "supply",
-                        "type": "uint256"
-                    }
+                    { "internalType": "contract IERC20Mintable", "name": "token", "type": "address" },
+                    { "internalType": "bool", "name": "paused", "type": "bool" },
+                    { "internalType": "bool", "name": "mintable", "type": "bool" },
+                    { "internalType": "uint256", "name": "rewardPerBlock", "type": "uint256" },
+                    { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" },
+                    { "internalType": "uint256", "name": "accRewardPerShare", "type": "uint256" },
+                    { "internalType": "uint256", "name": "supply", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.RewardInfo[]",
                 "name": "_rewardInfo",
@@ -271,16 +103,8 @@
             },
             {
                 "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "tokenId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+                    { "internalType": "uint256", "name": "amount", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.NftDeposit[]",
                 "name": "_requiredCards",
@@ -294,31 +118,11 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "_admin",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_adminReward",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_referralFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_startBlock",
-                "type": "uint256"
-            },
-            {
-                "internalType": "contract IElvantisPoolCards",
-                "name": "_poolCards",
-                "type": "address"
-            }
+            { "internalType": "address", "name": "_admin", "type": "address" },
+            { "internalType": "uint256", "name": "_adminReward", "type": "uint256" },
+            { "internalType": "uint256", "name": "_referralFee", "type": "uint256" },
+            { "internalType": "uint256", "name": "_startBlock", "type": "uint256" },
+            { "internalType": "contract IElvantisPoolCards", "name": "_poolCards", "type": "address" }
         ],
         "name": "addProject",
         "outputs": [],
@@ -328,33 +132,15 @@
     {
         "inputs": [],
         "name": "cardHandler",
-        "outputs": [
-            {
-                "internalType": "contract ICardHandler",
-                "name": "",
-                "type": "address"
-            }
-        ],
+        "outputs": [{ "internalType": "contract ICardHandler", "name": "", "type": "address" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [
-            {
-                "internalType": "contract IERC20",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
+            { "internalType": "contract IERC20", "name": "token", "type": "address" },
+            { "internalType": "address", "name": "recipient", "type": "address" },
+            { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
         "name": "drainAccidentallySentTokens",
         "outputs": [],
@@ -364,93 +150,31 @@
     {
         "inputs": [],
         "name": "elvantisSpaceMoon",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" }
         ],
         "name": "getPoolInfo",
         "outputs": [
             {
                 "components": [
-                    {
-                        "internalType": "address",
-                        "name": "stakedToken",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "lockDeposit",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "stakedTokenStandard",
-                        "type": "uint8"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "stakedTokenId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "stakedAmount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "totalShares",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "depositFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "minWithdrawlFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "maxWithdrawlFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "withdrawlFeeReliefInterval",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "minDeposit",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "harvestInterval",
-                        "type": "uint256"
-                    }
+                    { "internalType": "address", "name": "stakedToken", "type": "address" },
+                    { "internalType": "bool", "name": "lockDeposit", "type": "bool" },
+                    { "internalType": "uint8", "name": "stakedTokenStandard", "type": "uint8" },
+                    { "internalType": "uint256", "name": "stakedTokenId", "type": "uint256" },
+                    { "internalType": "uint256", "name": "stakedAmount", "type": "uint256" },
+                    { "internalType": "uint256", "name": "totalShares", "type": "uint256" },
+                    { "internalType": "uint16", "name": "depositFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "minWithdrawlFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "maxWithdrawlFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "withdrawlFeeReliefInterval", "type": "uint16" },
+                    { "internalType": "uint256", "name": "minDeposit", "type": "uint256" },
+                    { "internalType": "uint256", "name": "harvestInterval", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.PoolInfo",
                 "name": "",
@@ -461,119 +185,33 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            }
-        ],
+        "inputs": [{ "internalType": "uint256", "name": "projectId", "type": "uint256" }],
         "name": "getProjectInfo",
         "outputs": [
             {
                 "components": [
-                    {
-                        "internalType": "address",
-                        "name": "admin",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "adminReward",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "referralFee",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "rewardFee",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "startBlock",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "initialized",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "paused",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "contract IElvantisPoolCards",
-                        "name": "poolCards",
-                        "type": "address"
-                    },
+                    { "internalType": "address", "name": "admin", "type": "address" },
+                    { "internalType": "uint256", "name": "adminReward", "type": "uint256" },
+                    { "internalType": "uint256", "name": "referralFee", "type": "uint256" },
+                    { "internalType": "uint256", "name": "rewardFee", "type": "uint256" },
+                    { "internalType": "uint256", "name": "startBlock", "type": "uint256" },
+                    { "internalType": "bool", "name": "initialized", "type": "bool" },
+                    { "internalType": "bool", "name": "paused", "type": "bool" },
+                    { "internalType": "contract IElvantisPoolCards", "name": "poolCards", "type": "address" },
                     {
                         "components": [
-                            {
-                                "internalType": "address",
-                                "name": "stakedToken",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "bool",
-                                "name": "lockDeposit",
-                                "type": "bool"
-                            },
-                            {
-                                "internalType": "uint8",
-                                "name": "stakedTokenStandard",
-                                "type": "uint8"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "stakedTokenId",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "stakedAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "totalShares",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint16",
-                                "name": "depositFee",
-                                "type": "uint16"
-                            },
-                            {
-                                "internalType": "uint16",
-                                "name": "minWithdrawlFee",
-                                "type": "uint16"
-                            },
-                            {
-                                "internalType": "uint16",
-                                "name": "maxWithdrawlFee",
-                                "type": "uint16"
-                            },
-                            {
-                                "internalType": "uint16",
-                                "name": "withdrawlFeeReliefInterval",
-                                "type": "uint16"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "minDeposit",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "harvestInterval",
-                                "type": "uint256"
-                            }
+                            { "internalType": "address", "name": "stakedToken", "type": "address" },
+                            { "internalType": "bool", "name": "lockDeposit", "type": "bool" },
+                            { "internalType": "uint8", "name": "stakedTokenStandard", "type": "uint8" },
+                            { "internalType": "uint256", "name": "stakedTokenId", "type": "uint256" },
+                            { "internalType": "uint256", "name": "stakedAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "totalShares", "type": "uint256" },
+                            { "internalType": "uint16", "name": "depositFee", "type": "uint16" },
+                            { "internalType": "uint16", "name": "minWithdrawlFee", "type": "uint16" },
+                            { "internalType": "uint16", "name": "maxWithdrawlFee", "type": "uint16" },
+                            { "internalType": "uint16", "name": "withdrawlFeeReliefInterval", "type": "uint16" },
+                            { "internalType": "uint256", "name": "minDeposit", "type": "uint256" },
+                            { "internalType": "uint256", "name": "harvestInterval", "type": "uint256" }
                         ],
                         "internalType": "struct BaseStructs.PoolInfo[]",
                         "name": "pools",
@@ -590,56 +228,20 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" }
         ],
         "name": "getRewardInfo",
         "outputs": [
             {
                 "components": [
-                    {
-                        "internalType": "contract IERC20Mintable",
-                        "name": "token",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "paused",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "mintable",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "rewardPerBlock",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "lastRewardBlock",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "accRewardPerShare",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "supply",
-                        "type": "uint256"
-                    }
+                    { "internalType": "contract IERC20Mintable", "name": "token", "type": "address" },
+                    { "internalType": "bool", "name": "paused", "type": "bool" },
+                    { "internalType": "bool", "name": "mintable", "type": "bool" },
+                    { "internalType": "uint256", "name": "rewardPerBlock", "type": "uint256" },
+                    { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" },
+                    { "internalType": "uint256", "name": "accRewardPerShare", "type": "uint256" },
+                    { "internalType": "uint256", "name": "supply", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.RewardInfo[]",
                 "name": "",
@@ -650,13 +252,7 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            }
-        ],
+        "inputs": [{ "internalType": "uint256", "name": "projectId", "type": "uint256" }],
         "name": "initializeProject",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -665,70 +261,24 @@
     {
         "inputs": [],
         "name": "owner",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            },
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" },
             {
                 "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "shares",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "shareMultiplier",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "canHarvestAt",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "harvestRelief",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "withdrawFeeDiscount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "depositFeeDiscount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "stakedTimestamp",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "amount", "type": "uint256" },
+                    { "internalType": "uint256", "name": "shares", "type": "uint256" },
+                    { "internalType": "uint256", "name": "shareMultiplier", "type": "uint256" },
+                    { "internalType": "uint256", "name": "canHarvestAt", "type": "uint256" },
+                    { "internalType": "uint256", "name": "harvestRelief", "type": "uint256" },
+                    { "internalType": "uint256", "name": "withdrawFeeDiscount", "type": "uint256" },
+                    { "internalType": "uint256", "name": "depositFeeDiscount", "type": "uint256" },
+                    { "internalType": "uint256", "name": "stakedTimestamp", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.UserInfo",
                 "name": "user",
@@ -736,16 +286,8 @@
             },
             {
                 "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "rewardDebt",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "rewardLockedUp",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "rewardDebt", "type": "uint256" },
+                    { "internalType": "uint256", "name": "rewardLockedUp", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.UserRewardInfo[]",
                 "name": "userReward",
@@ -753,118 +295,50 @@
             }
         ],
         "name": "pendingRewards",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
+        "outputs": [{ "internalType": "uint256[]", "name": "", "type": "uint256[]" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [],
         "name": "poolFee",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [],
         "name": "poolFeeRecipient",
-        "outputs": [
-            {
-                "internalType": "contract IFeeReceiver",
-                "name": "",
-                "type": "address"
-            }
-        ],
+        "outputs": [{ "internalType": "contract IFeeReceiver", "name": "", "type": "address" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [],
         "name": "projectFee",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [],
         "name": "projectFeeRecipient",
-        "outputs": [
-            {
-                "internalType": "contract IFeeReceiver",
-                "name": "",
-                "type": "address"
-            }
-        ],
+        "outputs": [{ "internalType": "contract IFeeReceiver", "name": "", "type": "address" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
+        "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
         "name": "projectInfo",
         "outputs": [
-            {
-                "internalType": "address",
-                "name": "admin",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "adminReward",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "referralFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rewardFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "startBlock",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bool",
-                "name": "initialized",
-                "type": "bool"
-            },
-            {
-                "internalType": "bool",
-                "name": "paused",
-                "type": "bool"
-            },
-            {
-                "internalType": "contract IElvantisPoolCards",
-                "name": "poolCards",
-                "type": "address"
-            }
+            { "internalType": "address", "name": "admin", "type": "address" },
+            { "internalType": "uint256", "name": "adminReward", "type": "uint256" },
+            { "internalType": "uint256", "name": "referralFee", "type": "uint256" },
+            { "internalType": "uint256", "name": "rewardFee", "type": "uint256" },
+            { "internalType": "uint256", "name": "startBlock", "type": "uint256" },
+            { "internalType": "bool", "name": "initialized", "type": "bool" },
+            { "internalType": "bool", "name": "paused", "type": "bool" },
+            { "internalType": "contract IElvantisPoolCards", "name": "poolCards", "type": "address" }
         ],
         "stateMutability": "view",
         "type": "function"
@@ -872,135 +346,53 @@
     {
         "inputs": [],
         "name": "projectLength",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            }
-        ],
+        "inputs": [{ "internalType": "uint256", "name": "projectId", "type": "uint256" }],
         "name": "projectPoolLength",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
         "stateMutability": "view",
         "type": "function"
     },
-    {
-        "inputs": [],
-        "name": "renounceOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
+    { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
     {
         "inputs": [],
         "name": "rewardFee",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [],
         "name": "rewardFeeRecipient",
-        "outputs": [
-            {
-                "internalType": "contract IFeeReceiver",
-                "name": "",
-                "type": "address"
-            }
-        ],
+        "outputs": [{ "internalType": "contract IFeeReceiver", "name": "", "type": "address" }],
         "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" },
+            { "internalType": "uint256", "name": "", "type": "uint256" },
+            { "internalType": "uint256", "name": "", "type": "uint256" }
         ],
         "name": "rewardInfo",
         "outputs": [
-            {
-                "internalType": "contract IERC20Mintable",
-                "name": "token",
-                "type": "address"
-            },
-            {
-                "internalType": "bool",
-                "name": "paused",
-                "type": "bool"
-            },
-            {
-                "internalType": "bool",
-                "name": "mintable",
-                "type": "bool"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rewardPerBlock",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "lastRewardBlock",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "accRewardPerShare",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "supply",
-                "type": "uint256"
-            }
+            { "internalType": "contract IERC20Mintable", "name": "token", "type": "address" },
+            { "internalType": "bool", "name": "paused", "type": "bool" },
+            { "internalType": "bool", "name": "mintable", "type": "bool" },
+            { "internalType": "uint256", "name": "rewardPerBlock", "type": "uint256" },
+            { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" },
+            { "internalType": "uint256", "name": "accRewardPerShare", "type": "uint256" },
+            { "internalType": "uint256", "name": "supply", "type": "uint256" }
         ],
         "stateMutability": "view",
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "contract ICardHandler",
-                "name": "_cardHandler",
-                "type": "address"
-            }
-        ],
+        "inputs": [{ "internalType": "contract ICardHandler", "name": "_cardHandler", "type": "address" }],
         "name": "setCardHandler",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -1008,26 +400,10 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rewardId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "lastRewardBlock",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" },
+            { "internalType": "uint256", "name": "rewardId", "type": "uint256" },
+            { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" }
         ],
         "name": "setLastRewardBlock",
         "outputs": [],
@@ -1036,78 +412,22 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            },
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" },
             {
                 "components": [
-                    {
-                        "internalType": "address",
-                        "name": "stakedToken",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "lockDeposit",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "stakedTokenStandard",
-                        "type": "uint8"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "stakedTokenId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "stakedAmount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "totalShares",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "depositFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "minWithdrawlFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "maxWithdrawlFee",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint16",
-                        "name": "withdrawlFeeReliefInterval",
-                        "type": "uint16"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "minDeposit",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "harvestInterval",
-                        "type": "uint256"
-                    }
+                    { "internalType": "address", "name": "stakedToken", "type": "address" },
+                    { "internalType": "bool", "name": "lockDeposit", "type": "bool" },
+                    { "internalType": "uint8", "name": "stakedTokenStandard", "type": "uint8" },
+                    { "internalType": "uint256", "name": "stakedTokenId", "type": "uint256" },
+                    { "internalType": "uint256", "name": "stakedAmount", "type": "uint256" },
+                    { "internalType": "uint256", "name": "totalShares", "type": "uint256" },
+                    { "internalType": "uint16", "name": "depositFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "minWithdrawlFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "maxWithdrawlFee", "type": "uint16" },
+                    { "internalType": "uint16", "name": "withdrawlFeeReliefInterval", "type": "uint16" },
+                    { "internalType": "uint256", "name": "minDeposit", "type": "uint256" },
+                    { "internalType": "uint256", "name": "harvestInterval", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.PoolInfo",
                 "name": "_pool",
@@ -1115,41 +435,13 @@
             },
             {
                 "components": [
-                    {
-                        "internalType": "contract IERC20Mintable",
-                        "name": "token",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "paused",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "mintable",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "rewardPerBlock",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "lastRewardBlock",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "accRewardPerShare",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "supply",
-                        "type": "uint256"
-                    }
+                    { "internalType": "contract IERC20Mintable", "name": "token", "type": "address" },
+                    { "internalType": "bool", "name": "paused", "type": "bool" },
+                    { "internalType": "bool", "name": "mintable", "type": "bool" },
+                    { "internalType": "uint256", "name": "rewardPerBlock", "type": "uint256" },
+                    { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" },
+                    { "internalType": "uint256", "name": "accRewardPerShare", "type": "uint256" },
+                    { "internalType": "uint256", "name": "supply", "type": "uint256" }
                 ],
                 "internalType": "struct BaseStructs.RewardInfo[]",
                 "name": "_rewardInfo",
@@ -1163,16 +455,8 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "contract IFeeReceiver",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "fee",
-                "type": "uint256"
-            }
+            { "internalType": "contract IFeeReceiver", "name": "recipient", "type": "address" },
+            { "internalType": "uint256", "name": "fee", "type": "uint256" }
         ],
         "name": "setPoolFeeAndRecipient",
         "outputs": [],
@@ -1181,21 +465,9 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "shares",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" },
+            { "internalType": "uint256", "name": "shares", "type": "uint256" }
         ],
         "name": "setPoolShares",
         "outputs": [],
@@ -1204,31 +476,11 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "_admin",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_adminReward",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_referralFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "contract IElvantisPoolCards",
-                "name": "_poolCards",
-                "type": "address"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "address", "name": "_admin", "type": "address" },
+            { "internalType": "uint256", "name": "_adminReward", "type": "uint256" },
+            { "internalType": "uint256", "name": "_referralFee", "type": "uint256" },
+            { "internalType": "contract IElvantisPoolCards", "name": "_poolCards", "type": "address" }
         ],
         "name": "setProject",
         "outputs": [],
@@ -1237,16 +489,8 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "contract IFeeReceiver",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "fee",
-                "type": "uint256"
-            }
+            { "internalType": "contract IFeeReceiver", "name": "recipient", "type": "address" },
+            { "internalType": "uint256", "name": "fee", "type": "uint256" }
         ],
         "name": "setProjectFeeAndRecipient",
         "outputs": [],
@@ -1255,16 +499,8 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "contract IFeeReceiver",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "fee",
-                "type": "uint256"
-            }
+            { "internalType": "contract IFeeReceiver", "name": "recipient", "type": "address" },
+            { "internalType": "uint256", "name": "fee", "type": "uint256" }
         ],
         "name": "setRewardFeeAndRecipient",
         "outputs": [],
@@ -1273,26 +509,10 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rewardId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rewardPerBlock",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" },
+            { "internalType": "uint256", "name": "rewardId", "type": "uint256" },
+            { "internalType": "uint256", "name": "rewardPerBlock", "type": "uint256" }
         ],
         "name": "setRewardPerBlock",
         "outputs": [],
@@ -1301,26 +521,10 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rewardId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "accRewardPerShare",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" },
+            { "internalType": "uint256", "name": "rewardId", "type": "uint256" },
+            { "internalType": "uint256", "name": "accRewardPerShare", "type": "uint256" }
         ],
         "name": "setRewardPerShare",
         "outputs": [],
@@ -1329,26 +533,10 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rewardId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "supply",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" },
+            { "internalType": "uint256", "name": "rewardId", "type": "uint256" },
+            { "internalType": "uint256", "name": "supply", "type": "uint256" }
         ],
         "name": "setRewardSupply",
         "outputs": [],
@@ -1357,21 +545,9 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "projectId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "poolId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "projectId", "type": "uint256" },
+            { "internalType": "uint256", "name": "poolId", "type": "uint256" },
+            { "internalType": "uint256", "name": "amount", "type": "uint256" }
         ],
         "name": "setStakedAmount",
         "outputs": [],
@@ -1379,13 +555,7 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
+        "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
         "name": "transferOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",

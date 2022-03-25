@@ -58,7 +58,7 @@ const App = () => {
     // const erc1155Approval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
 
     console.log(pool1);
-    // console.log(pool);
+    console.log(pool);
 
     const poolData: Pool = {
         projectId: 0,

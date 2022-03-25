@@ -14,6 +14,14 @@ import {
     CARD_HANDLER_ADDRESS,
 } from "../../config";
 
+import projectHandlerAbi_v1 from "../../assets/abi/project_handler_v1.json";
+import cardHandlerAbi_v1 from "../../assets/abi/card_handler_v1.json";
+import farmAbi_v1 from "../../assets/abi/farm_v1.json";
+
+import projectHandlerAbi from "../../assets/abi/project_handler.json";
+import cardHandlerAbi from "../../assets/abi/card_handler.json";
+import farmAbi from "../../assets/abi/farm.json";
+
 const initialState: PoolState = {
     loadingV1: false,
     loadingV2: false,
@@ -41,8 +49,11 @@ export const loadV1Pools = createAsyncThunk(
                 projectId,
                 account,
                 FARM_ADDRESS_V1,
+                farmAbi_v1,
                 PROJECT_HANDLER_ADDRESS_V1,
-                CARD_HANDLER_ADDRESS_V1
+                projectHandlerAbi_v1,
+                CARD_HANDLER_ADDRESS_V1,
+                cardHandlerAbi_v1
             );
             return _pools;
         } catch (e) {
@@ -68,8 +79,11 @@ export const loadV2Pools = createAsyncThunk(
                 projectId,
                 account,
                 FARM_ADDRESS_V2,
+                farmAbi_v1,
                 PROJECT_HANDLER_ADDRESS_V2,
-                CARD_HANDLER_ADDRESS_V2
+                projectHandlerAbi_v1,
+                CARD_HANDLER_ADDRESS_V2,
+                cardHandlerAbi_v1
             );
             return _pools;
         } catch (e) {
@@ -95,8 +109,11 @@ export const loadPools = createAsyncThunk(
                 projectId,
                 account,
                 FARM_ADDRESS,
+                farmAbi,
                 PROJECT_HANDLER_ADDRESS,
-                CARD_HANDLER_ADDRESS
+                projectHandlerAbi,
+                CARD_HANDLER_ADDRESS,
+                cardHandlerAbi
             );
             return _pools;
         } catch (e) {
