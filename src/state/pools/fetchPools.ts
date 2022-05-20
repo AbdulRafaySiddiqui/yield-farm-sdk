@@ -54,7 +54,6 @@ const fetchPools = async (
     const poolCards = new Contract(POOL_CARDS_ADDRESS, POOL_CARDS_ABI, ethersProvider);
     const _project = await projectHandler.getProjectInfo(PROJECT_ID);
     const multiplierCards = await poolCards.getMultiplierCards();
-    console.log("_project", _project);
     const project: Project = {
         projectId: projectId,
         admin: _project.admin,
