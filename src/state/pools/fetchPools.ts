@@ -162,34 +162,34 @@ const fetchPools = async (
                 ],
             });
         }
-        if (POOL_CARDS_ADDRESS) {
-            poolCallContext.push({
-                reference: `poolCardsApproval-${e.poolId}`,
-                contractAddress: POOL_CARDS_ADDRESS,
-                abi: ERC1155_ABI,
-                calls: [
-                    {
-                        reference: "poolCardsApproval",
-                        methodName: "isApprovedForAll",
-                        methodParameters: [account, farmAddress],
-                    },
-                ],
-            });
-        }
-        if (POOL_CARDS_ADDRESS) {
-            poolCallContext.push({
-                reference: `poolCardsCardHandlerApproval-${e.poolId}`,
-                contractAddress: POOL_CARDS_ADDRESS,
-                abi: ERC1155_ABI,
-                calls: [
-                    {
-                        reference: "poolCardsCardHandlerApproval",
-                        methodName: "isApprovedForAll",
-                        methodParameters: [account, cardHandlerAddress],
-                    },
-                ],
-            });
-        }
+        // if (POOL_CARDS_ADDRESS) {
+        //     poolCallContext.push({
+        //         reference: `poolCardsApproval-${e.poolId}`,
+        //         contractAddress: POOL_CARDS_ADDRESS,
+        //         abi: ERC1155_ABI,
+        //         calls: [
+        //             {
+        //                 reference: "poolCardsApproval",
+        //                 methodName: "isApprovedForAll",
+        //                 methodParameters: [account, farmAddress],
+        //             },
+        //         ],
+        //     });
+        // }
+        // if (POOL_CARDS_ADDRESS) {
+        //     poolCallContext.push({
+        //         reference: `poolCardsCardHandlerApproval-${e.poolId}`,
+        //         contractAddress: POOL_CARDS_ADDRESS,
+        //         abi: ERC1155_ABI,
+        //         calls: [
+        //             {
+        //                 reference: "poolCardsCardHandlerApproval",
+        //                 methodName: "isApprovedForAll",
+        //                 methodParameters: [account, cardHandlerAddress],
+        //             },
+        //         ],
+        //     });
+        // }
         poolCallContext.push({
             reference: `getUserCardsInfo-${e.poolId}`,
             contractAddress: cardHandlerAddress,
@@ -263,18 +263,20 @@ const fetchPools = async (
         e.stakeTokenApproved = e.stakedTokenStandard === TokenStandard.ERC20 ? toBigNumber(allowance).gt(0) : allowance;
 
         // pool cards approval
-        const isApprovedForAll = resultsCall.results[`poolCardsApproval-${e.poolId}`]?.callsReturnContext
-            ?.shift()
-            ?.returnValues?.shift();
-        e.farmApproved = isApprovedForAll ?? true;
+        const isApprovedForAll = true;
+        // resultsCall.results[`poolCardsApproval-${e.poolId}`]?.callsReturnContext
+        //     ?.shift()
+        //     ?.returnValues?.shift();
+        e.farmApproved = isApprovedForAll;
 
         // pool cards card handler approval
-        const isCardHandlerApprovedForAll = resultsCall.results[
-            `poolCardsCardHandlerApproval-${e.poolId}`
-        ]?.callsReturnContext
-            ?.shift()
-            ?.returnValues?.shift();
-        e.cardHandlerApproved = isCardHandlerApprovedForAll ?? true;
+        const isCardHandlerApprovedForAll = true;
+        // resultsCall.results[
+        //     `poolCardsCardHandlerApproval-${e.poolId}`
+        // ]?.callsReturnContext
+        //     ?.shift()
+        //     ?.returnValues?.shift();
+        e.cardHandlerApproved = isCardHandlerApprovedForAll;
 
         // nft deposit info
         const responseForGetUserCardsInfo = resultsCall.results[`getUserCardsInfo-${e.poolId}`];
