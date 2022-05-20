@@ -45,10 +45,10 @@ const App = () => {
     // const addPool = useAddPool()
     // const setPool = useSetPool()
     usePools();
-    usePoolsV1();
-    usePoolsV2();
+    // usePoolsV1();
+    // usePoolsV2();
     const pool = usePool(0);
-    const pool1 = usePoolV1(0);
+    // const pool1 = usePoolV1(0);
     // const pool = usePoolV2(0);
     // const depositHook = useDeposit()
     // const harvestHook = useHarvest()
@@ -57,7 +57,7 @@ const App = () => {
     // const erc20Approval = useERC20Approval(pools[0]?.stakedToken, FARM_ADDRESS);
     // const erc1155Approval = useERC1155Approval(POOL_CARDS_ADDRESS, FARM_ADDRESS);
 
-    console.log(pool1);
+    // console.log(pool1);
     console.log(pool);
 
     const poolData: Pool = {

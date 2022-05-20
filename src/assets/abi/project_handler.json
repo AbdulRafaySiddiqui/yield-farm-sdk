@@ -219,6 +219,11 @@
                     },
                     {
                         "internalType": "uint256",
+                        "name": "maxDeposit",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "harvestInterval",
                         "type": "uint256"
                     },
@@ -337,6 +342,11 @@
             {
                 "internalType": "address",
                 "name": "_admin",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_feeRecipient",
                 "type": "address"
             },
             {
@@ -475,6 +485,11 @@
                     },
                     {
                         "internalType": "uint256",
+                        "name": "maxDeposit",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "harvestInterval",
                         "type": "uint256"
                     },
@@ -507,6 +522,11 @@
                     {
                         "internalType": "address",
                         "name": "admin",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "feeRecipient",
                         "type": "address"
                     },
                     {
@@ -599,6 +619,11 @@
                             {
                                 "internalType": "uint256",
                                 "name": "minDeposit",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "maxDeposit",
                                 "type": "uint256"
                             },
                             {
@@ -878,6 +903,11 @@
             {
                 "internalType": "address",
                 "name": "admin",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "feeRecipient",
                 "type": "address"
             },
             {
@@ -1178,6 +1208,11 @@
                     },
                     {
                         "internalType": "uint256",
+                        "name": "maxDeposit",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "harvestInterval",
                         "type": "uint256"
                     },
@@ -1290,6 +1325,11 @@
             {
                 "internalType": "address",
                 "name": "_admin",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_feeRecipient",
                 "type": "address"
             },
             {

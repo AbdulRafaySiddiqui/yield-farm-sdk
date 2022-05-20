@@ -14,6 +14,7 @@ export enum TokenStandard {
 export interface Project {
     projectId: number;
     admin: string;
+    feeRecipient: string;
     adminReward: number;
     initialized: boolean;
     paused: boolean;

@@ -43,6 +43,7 @@ export const useProject = (projectId: number) => {
                 setProject({
                     projectId: projectId,
                     admin: _project.admin,
+                    feeRecipient: _project.feeRecipient,
                     adminReward: toBigNumber(_project.adminReward).toNumber(),
                     initialized: _project.initialized,
                     paused: _project.paused,

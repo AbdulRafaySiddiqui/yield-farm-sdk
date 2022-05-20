@@ -49,15 +49,16 @@ const fetchPools = async (
 ) => {
     if (!ethersProvider || !account) return;
 
-    console.log("projectHandlerAddress", PROJECT_ID, projectHandlerAddress);
     const EthPriceInBUSD = Object.values(await getLPInfo(ethersProvider, [ETH_USD_PAIR]))[0].token0.price;
     const projectHandler = new Contract(projectHandlerAddress, projectHandlerAbi, ethersProvider);
     const poolCards = new Contract(POOL_CARDS_ADDRESS, POOL_CARDS_ABI, ethersProvider);
     const _project = await projectHandler.getProjectInfo(PROJECT_ID);
     const multiplierCards = await poolCards.getMultiplierCards();
+    console.log("_project", _project);
     const project: Project = {
         projectId: projectId,
         admin: _project.admin,
+        feeRecipient: _project.feeRecipient,
         adminReward: toBigNumber(_project.adminReward).toNumber(),
         initialized: _project.initialized,
         paused: _project.paused,
@@ -87,7 +88,6 @@ const fetchPools = async (
             };
         }),
     };
-
     const multicall = new Multicall({
         ethersProvider: ethersProvider,
         tryAggregate: false,
