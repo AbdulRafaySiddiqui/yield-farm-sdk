@@ -219,6 +219,11 @@
                     },
                     {
                         "internalType": "uint256",
+                        "name": "maxDeposit",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "harvestInterval",
                         "type": "uint256"
                     },
@@ -300,8 +305,48 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "projectId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "poolId",
+                "type": "uint256"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct BaseStructs.NftDeposit[]",
+                "name": "requiredCards",
+                "type": "tuple[]"
+            }
+        ],
+        "name": "addPoolRequiredCards",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "_admin",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_feeRecipient",
                 "type": "address"
             },
             {
@@ -440,6 +485,11 @@
                     },
                     {
                         "internalType": "uint256",
+                        "name": "maxDeposit",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "harvestInterval",
                         "type": "uint256"
                     },
@@ -472,6 +522,11 @@
                     {
                         "internalType": "address",
                         "name": "admin",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "feeRecipient",
                         "type": "address"
                     },
                     {
@@ -564,6 +619,11 @@
                             {
                                 "internalType": "uint256",
                                 "name": "minDeposit",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "maxDeposit",
                                 "type": "uint256"
                             },
                             {
@@ -846,6 +906,11 @@
                 "type": "address"
             },
             {
+                "internalType": "address",
+                "name": "feeRecipient",
+                "type": "address"
+            },
+            {
                 "internalType": "uint256",
                 "name": "adminReward",
                 "type": "uint256"
@@ -914,6 +979,29 @@
             }
         ],
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "projectId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "poolId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "removePoolRequiredCard",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -1120,6 +1208,11 @@
                     },
                     {
                         "internalType": "uint256",
+                        "name": "maxDeposit",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "harvestInterval",
                         "type": "uint256"
                     },
@@ -1235,6 +1328,11 @@
                 "type": "address"
             },
             {
+                "internalType": "address",
+                "name": "_feeRecipient",
+                "type": "address"
+            },
+            {
                 "internalType": "uint256",
                 "name": "_adminReward",
                 "type": "uint256"
@@ -1243,6 +1341,11 @@
                 "internalType": "uint256",
                 "name": "_referralFee",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "_paused",
+                "type": "bool"
             },
             {
                 "internalType": "contract INFTVillageCards",

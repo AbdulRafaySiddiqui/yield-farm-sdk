@@ -1,23 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {
-    toUpperUnit,
-    useERC20Approval,
-    useERC1155Approval,
-    useEthers,
-    UtilsProvider,
-} from "@react-dapp/utils";
-import {
-    useAddPool,
-    useDeposit,
-    useHarvest,
-    usePool,
-    useSetPool,
-    useWithdraw,
-} from "./hooks/usePool";
+import { useAddPool, useDeposit, useHarvest, usePool, useSetPool, useWithdraw } from "./hooks/usePool";
+import { usePools } from "./state/hooks";
+import { toUpperUnit, useERC20Approval, useERC1155Approval, useEthers, UtilsProvider } from "@react-dapp/utils";
+import { usePoolV1, usePoolV2 } from "./hooks";
 import BigNumber from "bignumber.js";
 import { Pool } from "./config/types";
-import { usePools } from "./state/hooks";
+import { usePoolsV1, usePoolsV2 } from "./state/hooks";
 import { Provider } from "react-redux";
 import store from "./state/store";
 import { FARM_ADDRESS, POOL_CARDS_ADDRESS } from "./config";

@@ -14,6 +14,7 @@ export enum TokenStandard {
 export interface Project {
     projectId: number;
     admin: string;
+    feeRecipient: string;
     adminReward: number;
     initialized: boolean;
     paused: boolean;
@@ -62,6 +63,7 @@ export interface Pool {
             details: TokenAndLPDetails;
         };
     };
+    multiplierCards?: number[];
 }
 
 export interface RewardInfo {
@@ -106,7 +108,7 @@ export interface NftDepositInfo {
 }
 
 // order should be same as in contract
-export interface DepositInfo {
+export interface DepositInfoV1 {
     projectId: number;
     poolId: number;
     amount: string;
@@ -114,10 +116,11 @@ export interface DepositInfo {
     withdrawFeeCards: NftDeposit[];
     harvestCards: NftDeposit[];
     multiplierCards: NftDeposit[];
-    requiredCards: NftDeposit[];
     referrer: string;
 }
-
+export interface DepositInfo extends DepositInfoV1 {
+    requiredCards: NftDeposit[];
+}
 export interface HarvestInfo {
     projectId: number;
     poolId: number;
@@ -175,8 +178,12 @@ export interface TokenAndLPDetails extends Token {
 }
 
 export interface PoolState {
+    loadingV1: boolean;
+    loadingV2: boolean;
     loading: boolean;
-    data: Pool[];
+    farmDataV1: Pool[];
+    farmDataV2: Pool[];
+    farmData: Pool[];
 }
 
 export interface State {

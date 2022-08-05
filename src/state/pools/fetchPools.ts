@@ -6,22 +6,19 @@ import {
     LP_ABI,
     toBigNumber,
     toLowerUnit,
+    ZERO_ADDRESS,
 } from "@react-dapp/utils";
 import {
-    CARD_HANDLER_ADDRESS,
     ETH_USD_PAIR,
     EXCHANGE_FACTORY_ADDRESS,
-    FARM_ADDRESS,
     LP_NAME,
     POOL_CARDS_ADDRESS,
-    PROJECT_HANDLER_ADDRESS,
     PROJECT_ID,
     WRAPPED_NATIVE,
 } from "../../config";
-import PROJECT_HANDLER_ABI from "../../assets/abi/project_handler.json";
-import CARD_HANDLER_ABI from "../../assets/abi/card_handler.json";
+
 import FACTORY_ABI from "../../assets/abi/pancakeswap_factory_abi.json";
-import FARM_ABI from "../../assets/abi/farm.json";
+import POOL_CARDS_ABI from "../../assets/abi/pool_cards_abi.json";
 import {
     LPAndPriceDetails,
     LPDetails,
@@ -35,34 +32,32 @@ import {
     TokenDetails,
     TokenStandard,
 } from "../../config/types";
-import {
-    ContractCallContext,
-    ContractCallResults,
-    Multicall,
-} from "ethereum-multicall";
+import { ContractCallContext, ContractCallResults, Multicall } from "ethereum-multicall";
 import BigNumber from "bignumber.js";
 import { Contract, providers } from "ethers";
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const fetchPools = async (
     ethersProvider: providers.Provider,
     projectId: number,
-    account: string
+    account: string,
+    farmAddress: string,
+    farmAbi: any,
+    projectHandlerAddress: string,
+    projectHandlerAbi: any,
+    cardHandlerAddress: string,
+    cardHandlerAbi: any
 ) => {
     if (!ethersProvider || !account) return;
 
-    const EthPriceInBUSD = Object.values(
-        await getLPInfo(ethersProvider, [ETH_USD_PAIR])
-    )[0].token0.price;
-    const projectHandler = new Contract(
-        PROJECT_HANDLER_ADDRESS,
-        PROJECT_HANDLER_ABI,
-        ethersProvider
-    );
-    const _project = await projectHandler.getProjectInfo("0");
+    const EthPriceInBUSD = Object.values(await getLPInfo(ethersProvider, [ETH_USD_PAIR]))[0].token0.price;
+    const projectHandler = new Contract(projectHandlerAddress, projectHandlerAbi, ethersProvider);
+    const poolCards = new Contract(POOL_CARDS_ADDRESS, POOL_CARDS_ABI, ethersProvider);
+    const _project = await projectHandler.getProjectInfo(PROJECT_ID);
+    const multiplierCards = await poolCards.getMultiplierCards();
     const project: Project = {
         projectId: projectId,
         admin: _project.admin,
+        feeRecipient: _project.feeRecipient,
         adminReward: toBigNumber(_project.adminReward).toNumber(),
         initialized: _project.initialized,
         paused: _project.paused,
@@ -84,10 +79,11 @@ const fetchPools = async (
                 minWithdrawlFee: toBigNumber(e.minWithdrawlFee).toNumber(),
                 maxWithdrawlFee: toBigNumber(e.maxWithdrawlFee).toNumber(),
                 totalShares: toBigNumber(e.totalShares),
-                minRequiredCards: toBigNumber(e.minRequiredCards).toNumber(),
+                minRequiredCards: toBigNumber(e.minRequiredCards ?? 0).toNumber(),
                 withdrawlFeeReliefInterval: e.withdrawlFeeReliefInterval,
                 requiredCards: [],
                 rewardInfo: [],
+                multiplierCards: multiplierCards.map((i: any) => toBigNumber(i).toNumber()),
             };
         }),
     };
@@ -102,8 +98,8 @@ const fetchPools = async (
         const e = project.pools[i];
         poolCallContext.push({
             reference: `rewardInfo-${e.poolId}`,
-            contractAddress: PROJECT_HANDLER_ADDRESS,
-            abi: PROJECT_HANDLER_ABI,
+            contractAddress: projectHandlerAddress,
+            abi: projectHandlerAbi,
             calls: [
                 {
                     reference: "getRewardInfo",
@@ -114,8 +110,8 @@ const fetchPools = async (
         });
         poolCallContext.push({
             reference: `requiredCards-${e.poolId}`,
-            contractAddress: CARD_HANDLER_ADDRESS,
-            abi: CARD_HANDLER_ABI,
+            contractAddress: cardHandlerAddress,
+            abi: cardHandlerAbi,
             calls: [
                 {
                     reference: "getPoolRequiredCards",
@@ -126,8 +122,8 @@ const fetchPools = async (
         });
         poolCallContext.push({
             reference: `pendingRewards-${e.poolId}`,
-            contractAddress: FARM_ADDRESS,
-            abi: FARM_ABI,
+            contractAddress: farmAddress,
+            abi: farmAbi,
             calls: [
                 {
                     reference: "pendingRewards",
@@ -138,8 +134,8 @@ const fetchPools = async (
         });
         poolCallContext.push({
             reference: `userInfo-${e.poolId}`,
-            contractAddress: FARM_ADDRESS,
-            abi: FARM_ABI,
+            contractAddress: farmAddress,
+            abi: farmAbi,
             calls: [
                 {
                     reference: "userInfo",
@@ -161,43 +157,44 @@ const fetchPools = async (
                 calls: [
                     {
                         reference: "stakedTokenApproval",
-                        methodName:
-                            e.stakedTokenStandard === TokenStandard.ERC20
-                                ? "allowance"
-                                : "isApprovedForAll",
-                        methodParameters: [account, FARM_ADDRESS],
+                        methodName: e.stakedTokenStandard === TokenStandard.ERC20 ? "allowance" : "isApprovedForAll",
+                        methodParameters: [account, farmAddress],
                     },
                 ],
             });
         }
-        poolCallContext.push({
-            reference: `poolCardsApproval-${e.poolId}`,
-            contractAddress: POOL_CARDS_ADDRESS,
-            abi: ERC1155_ABI,
-            calls: [
-                {
-                    reference: "poolCardsApproval",
-                    methodName: "isApprovedForAll",
-                    methodParameters: [account, FARM_ADDRESS],
-                },
-            ],
-        });
-        poolCallContext.push({
-            reference: `poolCardsCardHandlerApproval-${e.poolId}`,
-            contractAddress: POOL_CARDS_ADDRESS,
-            abi: ERC1155_ABI,
-            calls: [
-                {
-                    reference: "poolCardsCardHandlerApproval",
-                    methodName: "isApprovedForAll",
-                    methodParameters: [account, CARD_HANDLER_ADDRESS],
-                },
-            ],
-        });
+        // if (POOL_CARDS_ADDRESS) {
+        //     poolCallContext.push({
+        //         reference: `poolCardsApproval-${e.poolId}`,
+        //         contractAddress: POOL_CARDS_ADDRESS,
+        //         abi: ERC1155_ABI,
+        //         calls: [
+        //             {
+        //                 reference: "poolCardsApproval",
+        //                 methodName: "isApprovedForAll",
+        //                 methodParameters: [account, farmAddress],
+        //             },
+        //         ],
+        //     });
+        // }
+        // if (POOL_CARDS_ADDRESS) {
+        //     poolCallContext.push({
+        //         reference: `poolCardsCardHandlerApproval-${e.poolId}`,
+        //         contractAddress: POOL_CARDS_ADDRESS,
+        //         abi: ERC1155_ABI,
+        //         calls: [
+        //             {
+        //                 reference: "poolCardsCardHandlerApproval",
+        //                 methodName: "isApprovedForAll",
+        //                 methodParameters: [account, cardHandlerAddress],
+        //             },
+        //         ],
+        //     });
+        // }
         poolCallContext.push({
             reference: `getUserCardsInfo-${e.poolId}`,
-            contractAddress: CARD_HANDLER_ADDRESS,
-            abi: CARD_HANDLER_ABI,
+            contractAddress: cardHandlerAddress,
+            abi: cardHandlerAbi,
             calls: [
                 {
                     reference: "getUserCardsInfo",
@@ -207,36 +204,20 @@ const fetchPools = async (
             ],
         });
     }
-    const resultsCall: ContractCallResults = await multicall.call(
-        poolCallContext
-    );
+    const resultsCall: ContractCallResults = await multicall.call(poolCallContext);
 
     for (let i = 0; i < project.pools.length; i++) {
         const e = project.pools[i];
 
         // pendingRewards
-        const rawRewards =
-            resultsCall.results[
-                `pendingRewards-${e.poolId}`
-            ].callsReturnContext.shift()?.returnValues;
+        const rawRewards = resultsCall.results[`pendingRewards-${e.poolId}`].callsReturnContext.shift()?.returnValues;
         const rewards = rawRewards?.map((e) => toBigNumber(e));
 
         // rewardInfo
-        const rawRewardInfos =
-            resultsCall.results[
-                `rewardInfo-${e.poolId}`
-            ].callsReturnContext.shift()?.returnValues;
+        const rawRewardInfos = resultsCall.results[`rewardInfo-${e.poolId}`].callsReturnContext.shift()?.returnValues;
         e.rewardInfo =
             rawRewardInfos?.map((e, k): RewardInfo => {
-                const [
-                    token,
-                    paused,
-                    mintable,
-                    rewardPerBlock,
-                    lastRewardBlock,
-                    accRewardPerShare,
-                    supply,
-                ] = e;
+                const [token, paused, mintable, rewardPerBlock, lastRewardBlock, accRewardPerShare, supply] = e;
                 return {
                     token,
                     paused,
@@ -251,9 +232,7 @@ const fetchPools = async (
 
         // requireCards
         const rawRequiredCards =
-            resultsCall.results[
-                `requiredCards-${e.poolId}`
-            ].callsReturnContext.shift()?.returnValues;
+            resultsCall.results[`requiredCards-${e.poolId}`].callsReturnContext.shift()?.returnValues;
         e.requiredCards =
             rawRequiredCards?.map((e): NftDeposit => {
                 const [tokenId, amount] = e;
@@ -264,19 +243,9 @@ const fetchPools = async (
             }) ?? [];
 
         // userInfo
-        const rawUserInfo =
-            resultsCall.results[
-                `userInfo-${e.poolId}`
-            ].callsReturnContext.shift()?.returnValues;
-        const [
-            amount,
-            shares,
-            shareMultiplier,
-            canHarvestAt,
-            harvestRelief,
-            withdrawFeeDiscount,
-            stakedTimestamp,
-        ] = rawUserInfo ?? [];
+        const rawUserInfo = resultsCall.results[`userInfo-${e.poolId}`].callsReturnContext.shift()?.returnValues;
+        const [amount, shares, shareMultiplier, canHarvestAt, harvestRelief, withdrawFeeDiscount, stakedTimestamp] =
+            rawUserInfo ?? [];
         e.userInfo = {
             amount: toBigNumber(amount),
             shares: toBigNumber(shares),
@@ -289,35 +258,29 @@ const fetchPools = async (
         };
 
         // staked token approval
-        const allowance = resultsCall.results[
-            `stakedTokenApproval-${e.poolId}`
-        ]?.callsReturnContext
+        const allowance = resultsCall.results[`stakedTokenApproval-${e.poolId}`]?.callsReturnContext
             .shift()
             ?.returnValues.shift();
-        e.stakeTokenApproved =
-            e.stakedTokenStandard === TokenStandard.ERC20
-                ? toBigNumber(allowance).gt(0)
-                : allowance;
+        e.stakeTokenApproved = e.stakedTokenStandard === TokenStandard.ERC20 ? toBigNumber(allowance).gt(0) : allowance;
 
         // pool cards approval
-        const isApprovedForAll = resultsCall.results[
-            `poolCardsApproval-${e.poolId}`
-        ].callsReturnContext
-            .shift()
-            ?.returnValues.shift();
+        const isApprovedForAll = true;
+        // resultsCall.results[`poolCardsApproval-${e.poolId}`]?.callsReturnContext
+        //     ?.shift()
+        //     ?.returnValues?.shift();
         e.farmApproved = isApprovedForAll;
 
         // pool cards card handler approval
-        const isCardHandlerApprovedForAll = resultsCall.results[
-            `poolCardsCardHandlerApproval-${e.poolId}`
-        ].callsReturnContext
-            .shift()
-            ?.returnValues.shift();
+        const isCardHandlerApprovedForAll = true;
+        // resultsCall.results[
+        //     `poolCardsCardHandlerApproval-${e.poolId}`
+        // ]?.callsReturnContext
+        //     ?.shift()
+        //     ?.returnValues?.shift();
         e.cardHandlerApproved = isCardHandlerApprovedForAll;
 
         // nft deposit info
-        const responseForGetUserCardsInfo =
-            resultsCall.results[`getUserCardsInfo-${e.poolId}`];
+        const responseForGetUserCardsInfo = resultsCall.results[`getUserCardsInfo-${e.poolId}`];
         const shifted = responseForGetUserCardsInfo.callsReturnContext.shift();
 
         const returnValues = shifted?.returnValues;
@@ -330,19 +293,15 @@ const fetchPools = async (
                 amount: toBigNumber(item[1]).toNumber(),
             }));
             let arr: { tokenId: number; amount: number }[] = [];
-            formatedCards.forEach(
-                (item: { tokenId: number; amount: number }) => {
-                    if (arr && arr.some((i) => i.tokenId === item.tokenId)) {
-                        let i = arr.find(
-                            (i) => i.tokenId === item.tokenId
-                        )?.amount;
-                        i = i ?? 0 + item.amount;
-                        return;
-                    } else {
-                        arr.push(item);
-                    }
+            formatedCards.forEach((item: { tokenId: number; amount: number }) => {
+                if (arr && arr.some((i) => i.tokenId === item.tokenId)) {
+                    let i = arr.find((i) => i.tokenId === item.tokenId)?.amount;
+                    i = i ?? 0 + item.amount;
+                    return;
+                } else {
+                    arr.push(item);
                 }
-            );
+            });
             cards = arr;
             return arr;
         };
@@ -355,21 +314,14 @@ const fetchPools = async (
             withdrawFeeCards: [],
         };
     }
-
     // get pool stats
     let tokens: string[] = [];
     for (let i = 0; i < project.pools.length; i++) {
         const element = project.pools[i];
         tokens = [...tokens, ...element.rewardInfo.map((e) => e.token)];
-        if (element.stakedTokenStandard === TokenStandard.ERC20)
-            tokens.push(element.stakedToken);
+        if (element.stakedTokenStandard === TokenStandard.ERC20) tokens.push(element.stakedToken);
     }
-    const tokenPrices = await getTokenAndLPPrices(
-        ethersProvider,
-        tokens,
-        EthPriceInBUSD,
-        account
-    );
+    const tokenPrices = await getTokenAndLPPrices(ethersProvider, tokens, EthPriceInBUSD, account);
     for (let i = 0; i < project.pools.length; i++) {
         const pool = project.pools[i];
         project.pools[i].tokenPrices = tokenPrices;
@@ -379,27 +331,17 @@ const fetchPools = async (
         project.pools[i].stats = {
             price: stakeTokenDetails?.details?.price,
             liquidity: stakeTokenDetails?.details?.price?.times(
-                toLowerUnit(
-                    pool.stakedAmount.toFixed(),
-                    stakeTokenDetails?.details?.decimals
-                )
+                toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails?.details?.decimals)
             ),
             apy: pool.rewardInfo.map((e, j) => {
                 const rewardTokenDetails = tokenPrices[e.token];
-                project.pools[i].rewardInfo[j].details =
-                    rewardTokenDetails?.details;
+                project.pools[i].rewardInfo[j].details = rewardTokenDetails?.details;
                 if (rewardTokenDetails && stakeTokenDetails)
                     return getApy(
                         stakeTokenDetails.details.price?.toFixed() ?? "0",
                         rewardTokenDetails.details.price?.toFixed() ?? "0",
-                        toLowerUnit(
-                            pool.stakedAmount.toFixed(),
-                            stakeTokenDetails.details.decimals
-                        ).toFixed(),
-                        toLowerUnit(
-                            e.rewardPerBlock.toFixed(),
-                            rewardTokenDetails?.details.decimals
-                        ).toNumber()
+                        toLowerUnit(pool.stakedAmount.toFixed(), stakeTokenDetails.details.decimals).toFixed(),
+                        toLowerUnit(e.rewardPerBlock.toFixed(), rewardTokenDetails?.details.decimals).toNumber()
                     );
             }),
         };
@@ -409,7 +351,6 @@ const fetchPools = async (
 
 const areLPTokens = async (ethers: providers.Provider, tokens: string[]) => {
     if (tokens.length === 0) return {};
-
     const multicall = new Multicall({
         ethersProvider: ethers,
         tryAggregate: false,
@@ -432,20 +373,12 @@ const areLPTokens = async (ethers: providers.Provider, tokens: string[]) => {
     const lpTokens: {
         [key: string]: boolean;
     } = {};
-    tokens.forEach(
-        (e) =>
-            (lpTokens[e] =
-                data[e].callsReturnContext[0].returnValues[0] === LP_NAME)
-    );
+    tokens.forEach((e) => (lpTokens[e] = data[e].callsReturnContext[0].returnValues[0] === LP_NAME));
     return lpTokens;
 };
 
 // return token info and lp
-const getTokenDetails = async (
-    ethers: providers.Provider,
-    tokens: string[],
-    userAccount: string
-) => {
+const getTokenDetails = async (ethers: providers.Provider, tokens: string[], userAccount: string) => {
     if (tokens.length === 0) return {};
     const multicall = new Multicall({
         ethersProvider: ethers,
@@ -506,8 +439,7 @@ const getTokenDetails = async (
     } = {};
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
-        const lp =
-            data[`getPair-${token}`].callsReturnContext[0].returnValues[0];
+        const lp = data[`getPair-${token}`].callsReturnContext[0].returnValues[0];
         const details = data[`tokenDetails-${token}`].callsReturnContext;
         lpTokens[token] = {
             address: token,
@@ -515,21 +447,14 @@ const getTokenDetails = async (
             symbol: details[1].returnValues[0],
             decimals: details[2].returnValues[0],
             totalSupply: toBigNumber(details[3].returnValues[0]),
-            balance:
-                userAccount === ZERO_ADDRESS
-                    ? toBigNumber(0)
-                    : toBigNumber(details[4].returnValues[0]),
+            balance: userAccount === ZERO_ADDRESS ? toBigNumber(0) : toBigNumber(details[4].returnValues[0]),
             lp: lp,
         };
     }
     return lpTokens;
 };
 
-const getLPInfo = async (
-    ethers: providers.Provider,
-    lpTokens: string[],
-    userAccount: string = ZERO_ADDRESS
-) => {
+const getLPInfo = async (ethers: providers.Provider, lpTokens: string[], userAccount: string = ZERO_ADDRESS) => {
     if (lpTokens.length === 0) return {};
 
     const multicall = new Multicall({
@@ -681,35 +606,17 @@ const getLPInfo = async (
     });
 
     const lpDetails: { [key: string]: LPDetails } = {};
-    const pairTokensData = (
-        await multicall.call([...token0InfoCall, ...token1InfoCal])
-    ).results;
+    const pairTokensData = (await multicall.call([...token0InfoCall, ...token1InfoCal])).results;
     for (const key in lpTokenData) {
-        const token0 =
-            pairTokensData[
-                lpTokenData[key].address + lpTokenData[key].token0Address
-            ];
-        const token1 =
-            pairTokensData[
-                lpTokenData[key].address + lpTokenData[key].token1Address
-            ];
-        const token0Balance = toBigNumber(
-            token0.callsReturnContext[4].returnValues[0]
-        );
-        const token1Balance = toBigNumber(
-            token1.callsReturnContext[4].returnValues[0]
-        );
+        const token0 = pairTokensData[lpTokenData[key].address + lpTokenData[key].token0Address];
+        const token1 = pairTokensData[lpTokenData[key].address + lpTokenData[key].token1Address];
+        const token0Balance = toBigNumber(token0.callsReturnContext[4].returnValues[0]);
+        const token1Balance = toBigNumber(token1.callsReturnContext[4].returnValues[0]);
         const token0Decimals = token0.callsReturnContext[2].returnValues[0];
         const token1Decimals = token1.callsReturnContext[2].returnValues[0];
 
-        const token0UnitBalance = toLowerUnit(
-            token0Balance.toFixed(0),
-            token0Decimals
-        );
-        const token1UnitBalance = toLowerUnit(
-            token1Balance.toFixed(0),
-            token1Decimals
-        );
+        const token0UnitBalance = toLowerUnit(token0Balance.toFixed(0), token0Decimals);
+        const token1UnitBalance = toLowerUnit(token1Balance.toFixed(0), token1Decimals);
 
         const token0Symbol = token0.callsReturnContext[1].returnValues[0];
         const token1Symbol = token1.callsReturnContext[1].returnValues[0];
@@ -722,15 +629,9 @@ const getLPInfo = async (
                 name: token0.callsReturnContext[0].returnValues[0],
                 symbol: token0.callsReturnContext[1].returnValues[0],
                 decimals: token0.callsReturnContext[2].returnValues[0],
-                totalSupply: toBigNumber(
-                    token0.callsReturnContext[3].returnValues[0]
-                ),
-                lpBalance: toBigNumber(
-                    token0.callsReturnContext[4].returnValues[0]
-                ),
-                balance: toBigNumber(
-                    token0.callsReturnContext[5].returnValues[0]
-                ),
+                totalSupply: toBigNumber(token0.callsReturnContext[3].returnValues[0]),
+                lpBalance: toBigNumber(token0.callsReturnContext[4].returnValues[0]),
+                balance: toBigNumber(token0.callsReturnContext[5].returnValues[0]),
                 // token0 price in terms of token1
                 price: token1UnitBalance.div(token0UnitBalance),
             },
@@ -739,15 +640,9 @@ const getLPInfo = async (
                 name: token1.callsReturnContext[0].returnValues[0],
                 symbol: token1.callsReturnContext[1].returnValues[0],
                 decimals: token1.callsReturnContext[2].returnValues[0],
-                totalSupply: toBigNumber(
-                    token1.callsReturnContext[3].returnValues[0]
-                ),
-                lpBalance: toBigNumber(
-                    token1.callsReturnContext[4].returnValues[0]
-                ),
-                balance: toBigNumber(
-                    token1.callsReturnContext[5].returnValues[0]
-                ),
+                totalSupply: toBigNumber(token1.callsReturnContext[3].returnValues[0]),
+                lpBalance: toBigNumber(token1.callsReturnContext[4].returnValues[0]),
+                balance: toBigNumber(token1.callsReturnContext[5].returnValues[0]),
                 // token1 price in terms on token0
                 price: token0UnitBalance.div(token1UnitBalance),
             },
@@ -777,10 +672,7 @@ const getTokenPriceDetails = async (
         const e = lpInfo[tokenDetails[t].lp];
         if (e) {
             const baseToken = e.token0Address === t ? e.token0 : e.token1;
-            const usdPrice =
-                e.token0Address === t
-                    ? e.token0.price.times(ethPrice)
-                    : e.token1.price.times(ethPrice);
+            const usdPrice = e.token0Address === t ? e.token0.price.times(ethPrice) : e.token1.price.times(ethPrice);
 
             tokenPrice[t] = {
                 ...baseToken, // this is the token from LP pair
@@ -819,22 +711,13 @@ const getLPPriceDetails = async (
         allPairTokens.push(e.token0Address);
         allPairTokens.push(e.token1Address);
     });
-    const allPairTokensPrice = await getTokenPriceDetails(
-        ethers,
-        allPairTokens,
-        ethPrice,
-        userAccount
-    );
+    const allPairTokensPrice = await getTokenPriceDetails(ethers, allPairTokens, ethPrice, userAccount);
     const lpTvlDetails: {
         [key: string]: LPAndPriceDetails;
     } = {};
     Object.values(lpDetails).forEach((e) => {
-        const token0UsdTvl = allPairTokensPrice[e.token0Address].price.times(
-            toLowerUnit(e.token0.lpBalance.toFixed())
-        );
-        const token1UsdTvl = allPairTokensPrice[e.token1Address].price.times(
-            toLowerUnit(e.token1.lpBalance.toFixed())
-        );
+        const token0UsdTvl = allPairTokensPrice[e.token0Address].price.times(toLowerUnit(e.token0.lpBalance.toFixed()));
+        const token1UsdTvl = allPairTokensPrice[e.token1Address].price.times(toLowerUnit(e.token1.lpBalance.toFixed()));
         const tvl = token0UsdTvl.plus(token1UsdTvl);
         lpTvlDetails[e.address] = {
             ...lpDetails[e.address],
@@ -861,23 +744,9 @@ const getTokenAndLPPrices = async (
         else if (tokenLPs[e].lp !== ZERO_ADDRESS) tokens.push(e);
         else tokensWithoutLp.push(e);
     });
-    const tokenWithLpDetails = await getTokenPriceDetails(
-        ethers,
-        tokens,
-        ethPrice,
-        userAccount
-    );
-    const tokenWithoutLpDetails = await getTokenDetails(
-        ethers,
-        tokensWithoutLp,
-        userAccount
-    );
-    const lpDetails = await getLPPriceDetails(
-        ethers,
-        lps,
-        ethPrice,
-        userAccount
-    );
+    const tokenWithLpDetails = await getTokenPriceDetails(ethers, tokens, ethPrice, userAccount);
+    const tokenWithoutLpDetails = await getTokenDetails(ethers, tokensWithoutLp, userAccount);
+    const lpDetails = await getLPPriceDetails(ethers, lps, ethPrice, userAccount);
     const prices: {
         [key: string]: {
             isLP: boolean;
@@ -906,7 +775,7 @@ const getTokenAndLPPrices = async (
     for (const key in tokenWithoutLpDetails) {
         if (Object.prototype.hasOwnProperty.call(tokenWithoutLpDetails, key)) {
             prices[key] = {
-                isLP: true,
+                isLP: false,
                 details: tokenWithoutLpDetails[key],
             };
         }
