@@ -1343,6 +1343,11 @@
                 "type": "uint256"
             },
             {
+                "internalType": "bool",
+                "name": "_paused",
+                "type": "bool"
+            },
+            {
                 "internalType": "contract INFTVillageCards",
                 "name": "_poolCards",
                 "type": "address"

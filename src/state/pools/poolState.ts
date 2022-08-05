@@ -101,23 +101,23 @@ export const loadPools = createAsyncThunk(
         },
         thunkApi
     ) => {
-        // try {
-        const { ethersProvider, projectId, account } = payload;
-        const _pools = await fetchPools(
-            ethersProvider,
-            projectId,
-            account,
-            FARM_ADDRESS,
-            farmAbi,
-            PROJECT_HANDLER_ADDRESS,
-            projectHandlerAbi,
-            CARD_HANDLER_ADDRESS,
-            cardHandlerAbi
-        );
-        return _pools;
-        // } catch (e) {
-        //     console.log(e);
-        // }
+        try {
+            const { ethersProvider, projectId, account } = payload;
+            const _pools = await fetchPools(
+                ethersProvider,
+                projectId,
+                account,
+                FARM_ADDRESS,
+                farmAbi,
+                PROJECT_HANDLER_ADDRESS,
+                projectHandlerAbi,
+                CARD_HANDLER_ADDRESS,
+                cardHandlerAbi
+            );
+            return _pools;
+        } catch (e) {
+            console.log(e);
+        }
     }
 );
 

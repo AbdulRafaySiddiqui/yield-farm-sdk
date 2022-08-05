@@ -87,6 +87,7 @@ const fetchPools = async (
             };
         }),
     };
+
     const multicall = new Multicall({
         ethersProvider: ethersProvider,
         tryAggregate: false,
@@ -313,7 +314,6 @@ const fetchPools = async (
             withdrawFeeCards: [],
         };
     }
-
     // get pool stats
     let tokens: string[] = [];
     for (let i = 0; i < project.pools.length; i++) {
@@ -351,7 +351,6 @@ const fetchPools = async (
 
 const areLPTokens = async (ethers: providers.Provider, tokens: string[]) => {
     if (tokens.length === 0) return {};
-
     const multicall = new Multicall({
         ethersProvider: ethers,
         tryAggregate: false,
